@@ -1,0 +1,127 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CSV Analyzer</title>
+    <style>
+        .container {
+            border: .5rem darkred solid;
+            border-radius: 1rem;
+            padding: 2rem;
+        }
+        .upload-btn {
+            background-color: darkred;
+            color: white;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            margin-right: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Toolkit for Assessing Phones in Schools</h1>
+        
+        <div class="upload-section">
+            <input type="file" id="fileInput" class="file-input" accept=".csv" style="display:none;" />
+            <button class="upload-btn" onclick="document.getElementById('fileInput').click()">
+                Choose CSV File
+            </button>
+            <button class="analyze-btn" id="analyzeBtn" onclick="uploadFile()" disabled>
+                Analyze File
+            </button>
+            <div class="file-name" id="fileName"></div>
+        </div>
+        <div id="loading" class="loading" style="display:none;">
+            Analyzing your file...
+        </div>
+
+        <div id="error" class="error" style="display:none;"></div>
+
+        <div id="results" class="results"></div>
+    </div>
+
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const fileName = document.getElementById('fileName');
+        const analyzeBtn = document.getElementById('analyzeBtn');
+        const resultsDiv = document.getElementById('results');
+        const errorDiv = document.getElementById('error');
+        const loadingDiv = document.getElementById('loading');
+
+        fileInput.addEventListener('change', function(e) {
+            if (e.target.files.length > 0) {
+                fileName.textContent = 'Selected: ' + e.target.files[0].name;
+                analyzeBtn.disabled = false;
+                resultsDiv.style.display = 'none';
+                errorDiv.style.display = 'none';
+            }
+        });
+
+        async function uploadFile() {
+            const file = fileInput.files[0];
+            if (!file) {
+                showError('Please select a file first');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            loadingDiv.style.display = 'block';
+            resultsDiv.style.display = 'none';
+            errorDiv.style.display = 'none';
+
+            try {
+                const response = await fetch('/api/upload_csv', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    displayResults(data);
+                } else {
+                    showError(data.error || 'An error occurred');
+                }
+            } catch (error) {
+                showError('Failed to upload file: ' + error.message);
+            } finally {
+                loadingDiv.style.display = 'none';
+            }
+        }
+
+        function displayResults(data) {
+            let html = '<h2>Summary Statistics</h2>';
+            
+            html += `<div class="stat-item"><strong>Number of Rows:</strong> ${data.num_rows}</div>`;
+            html += `<div class="stat-item"><strong>Number of Columns:</strong> ${data.num_columns}</div>`;
+            html += `<div class="stat-item"><strong>Columns:</strong> ${data.columns.join(', ')}</div>`;
+            
+            if (data.summary_stats) {
+                html += '<h3>Phone Policy Summary Statistics</h3>';
+                for (const [column, stats] of Object.entries(data.summary_stats)) {
+                    html += `<div class="stat-item">
+                        <strong>${column}:</strong><br>
+                        Mean: ${stats.mean?.toFixed(2) || 'N/A'}, 
+                        Std: ${stats.std?.toFixed(2) || 'N/A'}, 
+                        Min: ${stats.min?.toFixed(2) || 'N/A'}, 
+                        Max: ${stats.max?.toFixed(2) || 'N/A'}
+                    </div>`;
+                }
+            }
+
+            resultsDiv.innerHTML = html;
+            resultsDiv.style.display = 'block';
+        }
+
+        function showError(message) {
+            errorDiv.textContent = 'Error: ' + message;
+            errorDiv.style.display = 'block';
+        }
+    </script>
+</body>
+</html>

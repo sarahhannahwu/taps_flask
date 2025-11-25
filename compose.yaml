@@ -1,0 +1,13 @@
+services:
+  python-data-analysis:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: taps-data-analysis:latest
+    container_name: taps-data-analysis
+    ports:
+      - "8888:8888"
+    restart: unless-stopped
+    volumes:
+      - ./app:/app/app
+    user: root
