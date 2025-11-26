@@ -6,7 +6,7 @@ services:
     image: taps-data-analysis:latest
     container_name: taps-data-analysis
     ports:
-      - "8888:8888"
+      - "5000:5000"
     restart: unless-stopped
     volumes:
       - ./app:/app/app

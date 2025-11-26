@@ -19,3 +19,8 @@ RUN pip install --upgrade pip && \
     rm requirements.txt
 
 COPY app /app/app
+
+# Expose port for app.py
+EXPOSE 5000
+# Set the default command to run the Flask app
+CMD ["python", "app/app.py"]

@@ -114,6 +114,18 @@
                 }
             }
 
+            if (data.responses && Object.keys(data.responses).length > 0) {
+                html += '<h3>Categorical Variable Counts</h3>';
+                for (const [column, valueCounts] of Object.entries(data.responses)) {
+                    html += `<div class="stat-item">
+                        <strong>${column}:</strong><br>`;
+                    for (const [value, count] of Object.entries(valueCounts)) {
+                        html += `&nbsp;&nbsp;${value}: ${count}<br>`;
+                    }
+                    html += `</div>`;
+                }
+            }
+
             resultsDiv.innerHTML = html;
             resultsDiv.style.display = 'block';
         }
