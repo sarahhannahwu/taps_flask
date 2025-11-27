@@ -37,6 +37,20 @@
             stroke: #000;
             shape-rendering: crispEdges;
         }
+        .feedback-list {
+            padding-left: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-top: 10px;
+            list-style-type: none;
+        }
+        .feedback-list li {
+            margin-bottom: 8px;
+            padding-bottom: 5px;
+            border-bottom: 1px dotted #eee;
+        }
     </style>
 </head>
 <body>
@@ -64,13 +78,110 @@
     </div>
 
     <script>
+        // --- CUSTOM FACTOR ORDER DEFINITIONS ---
+        const AGREEMENT_ORDER = [
+            "Strongly disagree",
+            "Somewhat disagree",
+            "Neither agree nor disagree",
+            "Somewhat agree",
+            "Strongly agree"
+        ];
+
+        const FREQUENCY_ORDER = [
+            "Never",
+            "This did not happen to me", // Including this as a 'zero' frequency response
+            "Less than once a week",
+            "About once a week",
+            "About half the time",
+            "Sometimes",
+            "Most days",
+            "Most of the time",
+            "Always"
+        ];
+
+        const RESTRICTIVENESS_ORDER = [
+            "The policy should be much more restrictive",
+            "The policy should be a little more restrictive",
+            "The policy is just right",
+            "The policy should be a little less restrictive",
+            "The policy should be much less restrictive",
+            "I prefer not to answer"
+        ];
+
+        const CUSTOM_COLUMN_ORDERS = {
+            // Agreement-style questions (Likert)
+            "In the following set of questions, we will ask about how you view your school experience. - In general, I pay attention in class.": AGREEMENT_ORDER,
+            "My school is a place where... - I often feel lonely.": FREQUENCY_ORDER,
+            "We are interested in understanding how you feel about your school's phone policy. Please rate your agreement with the following statements about your behavior or feelings since the\npolicy was introduced. “Since the new phone policy was introduced...” - I have felt closer to my friends.": AGREEMENT_ORDER,
+
+            // Frequency questions
+            "Q31a. In recent weeks, how often have you experienced the following DURING school hours? [Someone teased you or called you names.]": FREQUENCY_ORDER,
+
+            // Restrictiveness question
+            "Q15. In your opinion, should your school's phone policy be more or less restrictive than it is now?": RESTRICTIVENESS_ORDER,
+            
+            // Simple Yes/No/Other can be defined here too if needed, but often defaults are fine
+            "Q3. Do you feel you can contact your parent(s) in a timely manner when you need to during the school day? ": ["Yes", "No", "I prefer not to answer"]
+        };
+        
+        // --- Custom Sorting Function ---
+        function normalizeCategoryNames(data) {
+            // Create a map to merge counts for equivalent categories
+            const categoryMap = new Map();
+            
+            data.forEach(item => {
+                let normalizedCategory = item.category;
+                
+                // Normalize "Neither agree / disagree" to "Neither agree nor disagree"
+                if (item.category === "Neither agree / disagree") {
+                    normalizedCategory = "Neither agree nor disagree";
+                }
+                
+                // Add more normalizations here if needed in the future
+                
+                if (categoryMap.has(normalizedCategory)) {
+                    // Merge counts for the same normalized category
+                    categoryMap.set(normalizedCategory, categoryMap.get(normalizedCategory) + item.count);
+                } else {
+                    categoryMap.set(normalizedCategory, item.count);
+                }
+            });
+            
+            // Convert map back to array format
+            return Array.from(categoryMap, ([category, count]) => ({ category, count }));
+        }
+        
+        function applyCustomOrder(column, data) {
+            const customOrder = CUSTOM_COLUMN_ORDERS[column];
+            
+            if (customOrder) {
+                // Create a map for quick lookup of category index
+                const orderMap = new Map(customOrder.map((item, index) => [item, index]));
+                
+                // Filter out categories not in the custom order (if any) and sort
+                const sortedData = data.filter(d => orderMap.has(d.category)).sort((a, b) => {
+                    return orderMap.get(a.category) - orderMap.get(b.category);
+                });
+
+                // Add back any categories that were NOT in the custom order at the end (e.g., "Missing")
+                const unlistedData = data.filter(d => !orderMap.has(d.category));
+                
+                return sortedData.concat(unlistedData);
+            } 
+            
+            // For columns with percentage values (Q12, Q13, Q14), we rely on the Python backend
+            // which sorts them numerically (e.g., "10%" comes before "20%").
+            // For all other columns, return data as is.
+            return data;
+        }
+
+
         const fileInput = document.getElementById('fileInput');
         const fileName = document.getElementById('fileName');
         const analyzeBtn = document.getElementById('analyzeBtn');
         const resultsDiv = document.getElementById('results');
         const errorDiv = document.getElementById('error');
         const loadingDiv = document.getElementById('loading');
-        // Get the new charts container
         const chartsDiv = document.getElementById('charts'); 
 
         fileInput.addEventListener('change', function(e) {
@@ -79,7 +190,7 @@
                 analyzeBtn.disabled = false;
                 resultsDiv.style.display = 'none';
                 errorDiv.style.display = 'none';
-                chartsDiv.style.display = 'none'; // Hide charts on new file selection
+                chartsDiv.style.display = 'none';
             }
         });
 
@@ -95,7 +206,7 @@
 
             loadingDiv.style.display = 'block';
             resultsDiv.style.display = 'none';
-            chartsDiv.style.display = 'none'; // Hide charts during analysis
+            chartsDiv.style.display = 'none';
             errorDiv.style.display = 'none';
 
             try {
@@ -118,7 +229,6 @@
             }
         }
 
-        // 3. UPDATED displayResults function
         function displayResults(data) {
             // Clear previous results
             resultsDiv.innerHTML = '';
@@ -134,7 +244,6 @@
             if (data.summary_stats && Object.keys(data.summary_stats).length > 0) {
                 html += '<h3>Numerical Summary Statistics</h3>';
                 for (const [column, stats] of Object.entries(data.summary_stats)) {
-                    // Only show stats for columns with actual numerical data (checking if 'mean' exists)
                     if (stats.mean !== undefined) { 
                          html += `<div class="stat-item">
                             <strong>${column}:</strong><br>
@@ -150,22 +259,47 @@
             resultsDiv.innerHTML = html;
             resultsDiv.style.display = 'block';
 
-            // Categorical Charts Section
+            // --- Categorical Charts and Feedback Section ---
+            
+            const OPEN_ENDED_COLUMN = "Q38. Please share any other thoughts you have about your school's phone policy.";
+            let chartsGenerated = false;
+
             if (data.responses && Object.keys(data.responses).length > 0) {
                 chartsDiv.innerHTML = '<h2>Categorical Variable Visualizations</h2>';
                 
-                // Render a chart for each categorical column
                 for (const [column, valueCounts] of Object.entries(data.responses)) {
-                    // Skip Timestamp or columns with only one response (like the "other thoughts" field)
+                    
+                    // 1. Filter out open-ended feedback (Q38) and display as a list
+                    if (column === OPEN_ENDED_COLUMN) {
+                        const feedbackHtml = `
+                            <div class="stat-item">
+                                <h3>Open-Ended Feedback: ${column}</h3>
+                                <ul class="feedback-list">
+                                    ${Object.keys(valueCounts).map(feedback => `<li>${feedback}</li>`).join('')}
+                                </ul>
+                            </div>
+                        `;
+                        // Append the feedback to the main results div
+                        resultsDiv.innerHTML += feedbackHtml;
+                        continue;
+                    }
+                    
+                    // 2. Skip Timestamp or columns with only one meaningful response
                     if (column === 'Timestamp' || Object.keys(valueCounts).length <= 1) {
                         continue;
                     }
 
-                    const chartData = Object.entries(valueCounts).map(([key, value]) => ({
+                    let chartData = Object.entries(valueCounts).map(([key, value]) => ({
                         category: key,
                         count: value
                     }));
                     
+                    // 2.5. Normalize category names (e.g., merge "Neither agree / disagree" with "Neither agree nor disagree")
+                    chartData = normalizeCategoryNames(chartData);
+                    
+                    // 3. Apply custom sorting to enforce factor order
+                    chartData = applyCustomOrder(column, chartData);
+
                     // Create a unique ID for each chart container
                     const chartId = `chart-${column.replace(/[^a-zA-Z0-9]/g, '_')}`;
                     
@@ -177,8 +311,12 @@
                         </div>`;
 
                     renderD3BarChart(`#${chartId}`, chartData);
+                    chartsGenerated = true;
                 }
-                chartsDiv.style.display = 'block';
+                
+                if (chartsGenerated) {
+                    chartsDiv.style.display = 'block';
+                }
             }
         }
 
@@ -187,17 +325,14 @@
             errorDiv.style.display = 'block';
         }
 
-        // 3. NEW D3.js RENDERING FUNCTION
+        // D3.js RENDERING FUNCTION (Unchanged from previous response)
         function renderD3BarChart(containerSelector, data) {
-            // Set up chart dimensions
-            const margin = {top: 20, right: 30, bottom: 120, left: 60}, // Increased bottom margin for long labels
+            const margin = {top: 20, right: 30, bottom: 120, left: 60},
                   width = 500 - margin.left - margin.right,
                   height = 400 - margin.top - margin.bottom;
 
-            // Clear any previous chart in the container
             d3.select(containerSelector).selectAll("*").remove();
 
-            // Append the svg object to the div
             const svg = d3.select(containerSelector)
               .append("svg")
                 .attr("width", width + margin.left + margin.right)
@@ -205,30 +340,25 @@
               .append("g")
                 .attr("transform", `translate(${margin.left},${margin.top})`);
 
-            // X axis (Categories/Responses)
             const x = d3.scaleBand()
               .range([ 0, width ])
-              .domain(data.map(d => d.category))
+              .domain(data.map(d => d.category)) // D3 uses the order of the data passed here
               .padding(0.2);
             
-            // Add X axis to the SVG
             svg.append("g")
               .attr("transform", `translate(0,${height})`)
               .call(d3.axisBottom(x))
               .selectAll("text")
-                .attr("transform", "translate(-10,0)rotate(-45)") // Rotate labels for readability
+                .attr("transform", "translate(-10,0)rotate(-45)")
                 .style("text-anchor", "end");
 
-            // Y axis (Count)
             const y = d3.scaleLinear()
-              .domain([0, d3.max(data, d => d.count) * 1.1]) // Add 10% padding to max Y value
+              .domain([0, d3.max(data, d => d.count) * 1.1])
               .range([ height, 0]);
             
-            // Add Y axis to the SVG
             svg.append("g")
-              .call(d3.axisLeft(y).tickFormat(d3.format("d"))); // Ensure ticks are integers for counts
+              .call(d3.axisLeft(y).tickFormat(d3.format("d")));
 
-            // Bars
             svg.selectAll(".bar")
               .data(data)
               .join("rect")
@@ -238,7 +368,6 @@
                 .attr("y", d => y(d.count))
                 .attr("height", d => height - y(d.count));
             
-            // Optional: Add counts above bars
             svg.selectAll(".text")        
               .data(data)
               .enter()
