@@ -4,10 +4,24 @@
     <title>CSV Analyzer</title>
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <style>
+        body {
+            font-family: sans-serif; 
+            font-size: 20px;
+            margin: 0;
+            background-color: #f4f4f4;
+        }
         .container {
             border: .5rem darkred solid;
             border-radius: 1rem;
-            padding: 2rem;
+            padding: 5rem; 
+            max-width: 1200px;
+            margin: 2rem auto;
+            background-color: white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .upload-section {
+            text-align: center;
+            margin-bottom: 50px;
         }
         .upload-btn {
             background-color: darkred;
@@ -17,6 +31,26 @@
             border-radius: 0.25rem;
             cursor: pointer;
             margin-right: 1rem;
+            font-size: 20px;
+        }
+        .analyze-btn {
+            background-color: transparent;
+            color: black;
+            padding: 0.5rem 1rem;
+            border: black solid 1px;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            font-size: 20px;
+        }
+        .analyze-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+        .file-name {
+            margin-top: 1rem;
+        }
+        a {
+            color: #666;
         }
         /* Style for D3 Charts */
         .chart-container {
@@ -24,9 +58,14 @@
             padding: 15px;
             border: 1px solid #ccc;
             border-radius: 8px;
+            text-align: center;
+        }
+        .chart-container > div {
+            display: flex;
+            justify-content: center;
         }
         .bar {
-            fill: steelblue;
+            fill: rgb(111, 157, 196);
         }
         .bar:hover {
             fill: darkred;
@@ -51,12 +90,26 @@
             padding-bottom: 5px;
             border-bottom: 1px dotted #eee;
         }
+        h3.section-header {
+            border-bottom: 2px solid darkred;
+            padding-bottom: 10px;
+            margin-top: 60px; 
+            margin-bottom: 30px;
+            color: #333;
+            font-size: 28px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Toolkit for Assessing Phones in Schools</h1>
-        
+        <h1 style="text-align: center;">Toolkit for Assessing Phones in Schools</h1>
+        <p style="text-align: left; margin-top: 0.5rem; margin-bottom: 2rem; color: #666;">
+            This is the data analysis tool for the Toolkit for Assessing Phones in Schools (TAPS), a collaboration between the <strong>Stanford Social Media Lab</strong> and the <strong>NYU Tech and Society Lab</strong>. To use this tool, please download your school's TAPS survey data as a .csv file and then upload it here to view summary statistics and visualizations. Because this tool runs within Docker, it remains on your local machine and is not stored on any server.
+            <br>
+            <br>
+            Please note that this tool is designed specifically for analyzing data collected using the original TAPS survey. Uploading data from a modified or different survey will result in an error. Contact the research team at <a href="mailto:team@ssml.stanford.edu">team@ssml.stanford.edu</a> for assistance.
+        </p>
+
         <div class="upload-section">
             <input type="file" id="fileInput" class="file-input" accept=".csv" style="display:none;" />
             <button class="upload-btn" onclick="document.getElementById('fileInput').click()">
@@ -67,6 +120,7 @@
             </button>
             <div class="file-name" id="fileName"></div>
         </div>
+
         <div id="loading" class="loading" style="display:none;">
             Analyzing your file...
         </div>
@@ -78,103 +132,179 @@
     </div>
 
     <script>
+        // --- COLUMN NAME CLEANUP FUNCTION ---
+        function stripQuestionId(columnName) {
+            const regex = /^Q\d+[a-zA-Z]*[\.\s\n]*\s*/;
+            const cleanedName = columnName.replace(regex, '');
+            if (cleanedName.length < columnName.length) {
+                return cleanedName.trim();
+            }
+            return columnName;
+        }
+
+        // --- 1. DEFINED DISPLAY ORDER ---
+        const DISPLAY_ORDER = [
+            // Demographics (Canonical Keys)
+            "Gender", 
+            "Grade",
+            "Estimate how much time you spend on your phone on a typical school day.",
+            "how long do you spend on your phone", 
+
+            // Policy Mechanics
+            "Q3. Do you feel you can contact your parent(s) in a timely manner when you need to during the school day? ",
+            "Q12. How satisfied are you with your school’s phone policy?",
+            "Q13. How fairly do teachers and staff enforce your school's phone policy? Give your best guess.",
+            "Q14. What percentage of your classmates are using their phone when they shouldn’t be? Give your best guess.",
+            "Q15. In your opinion, should your school's phone policy be more or less restrictive than it is now?",
+
+            // Academic Impact
+            "In the following set of questions, we will ask about how you view your school experience. - In general, I pay attention in class.",
+
+            // Social/Emotional Impact
+            "We are interested in understanding how you feel about your school's phone policy. Please rate your agreement with the following statements about your behavior or feelings since the\npolicy was introduced. “Since the new phone policy was introduced...” - I have felt closer to my friends.",
+            "Q31a. In recent weeks, how often have you experienced the following DURING school hours? [Someone teased you or called you names.]",
+            "My school is a place where... - I often feel lonely."
+        ];
+
+        // Helper: treat any variant containing the substring as a grade question
+        function isGradeQuestion(column) {
+            return typeof column === 'string' && column.toLowerCase().includes("grade");
+        }
+        // Helper: detect gender question variants
+        function isGenderQuestion(column) {
+            return typeof column === 'string' && column.toLowerCase().includes("gender");
+        }
+        // Helper: detect usage question
+        function isUsageQuestion(column) {
+            return typeof column === 'string' && (column.toLowerCase().includes("how long") || column.toLowerCase().includes("time you spend"));
+        }
+
+        // --- NEW: Section Mapping Logic ---
+        function getSectionForColumn(column) {
+            // Include Usage in Demographics section
+            if (isGenderQuestion(column) || isGradeQuestion(column) || isUsageQuestion(column)) {
+                return "Demographics";
+            }
+            
+            // Perceptions of the Policy: Q3, Q12, Q13, Q14, Q15
+            if (column.startsWith("Q3.") || column.startsWith("Q12.") || column.startsWith("Q13.") || column.startsWith("Q14.") || column.startsWith("Q15.")) {
+                return "Perceptions of the Policy";
+            }
+            
+            // Academic Outcomes: Attention in class
+            if (column.includes("pay attention in class")) {
+                return "Academic Outcomes";
+            }
+            
+            // Social/Emotional Outcomes: Friends, Q31a (Teasing), Loneliness
+            if (column.includes("closer to my friends") || column.startsWith("Q31a") || column.includes("feel lonely")) {
+                return "Social/Emotional Outcomes";
+            }
+            
+            return null; // Unknown section
+        }
+
         // --- CUSTOM FACTOR ORDER DEFINITIONS ---
         const AGREEMENT_ORDER = [
-            "Strongly disagree",
-            "Somewhat disagree",
-            "Neither agree nor disagree",
-            "Somewhat agree",
-            "Strongly agree"
+            "Strongly disagree", "Somewhat disagree", "Neither agree nor disagree", "Somewhat agree", "Strongly agree"
         ];
 
         const FREQUENCY_ORDER = [
-            "Never",
-            "This did not happen to me", // Including this as a 'zero' frequency response
-            "Less than once a week",
-            "About once a week",
-            "About half the time",
-            "Sometimes",
-            "Most days",
-            "Most of the time",
-            "Always"
+            "Never", "This did not happen to me", "Less than once a week", "About once a week", 
+            "About half the time", "Sometimes", "Most days", "Most of the time", "Always"
         ];
 
         const RESTRICTIVENESS_ORDER = [
-            "The policy should be much more restrictive",
-            "The policy should be a little more restrictive",
-            "The policy is just right",
-            "The policy should be a little less restrictive",
-            "The policy should be much less restrictive",
-            "I prefer not to answer"
+            "The policy should be much more restrictive", "The policy should be a little more restrictive", 
+            "The policy is just right", "The policy should be a little less restrictive", 
+            "The policy should be much less restrictive", "I prefer not to answer"
         ];
 
+        const GENDER_ORDER = [
+            "Female", "Male", "Non-binary", "Genderqueer", "Prefer not to say", "Other"
+        ];
+        
+        const GRADE_ORDER = [
+            "9th grade", "10th grade", "11th grade", "12th grade", "Other"
+        ];
+
+        const RESTRICTIVENESS_QUESTION = "Q15. In your opinion, should your school's phone policy be more or less restrictive than it is now?";
+        const CONTACT_PARENT_QUESTION = "Q3. Do you feel you can contact your parent(s) in a timely manner when you need to during the school day? ";
+        const LONELINESS_QUESTION = "My school is a place where... - I often feel lonely.";
+
         const CUSTOM_COLUMN_ORDERS = {
-            // Agreement-style questions (Likert)
+            "Gender": GENDER_ORDER,
+            "Grade": GRADE_ORDER,
             "In the following set of questions, we will ask about how you view your school experience. - In general, I pay attention in class.": AGREEMENT_ORDER,
-            "My school is a place where... - I often feel lonely.": FREQUENCY_ORDER,
+            [LONELINESS_QUESTION]: FREQUENCY_ORDER,
             "We are interested in understanding how you feel about your school's phone policy. Please rate your agreement with the following statements about your behavior or feelings since the\npolicy was introduced. “Since the new phone policy was introduced...” - I have felt closer to my friends.": AGREEMENT_ORDER,
-
-            // Frequency questions
             "Q31a. In recent weeks, how often have you experienced the following DURING school hours? [Someone teased you or called you names.]": FREQUENCY_ORDER,
-
-            // Restrictiveness question
-            "Q15. In your opinion, should your school's phone policy be more or less restrictive than it is now?": RESTRICTIVENESS_ORDER,
-            
-            // Simple Yes/No/Other can be defined here too if needed, but often defaults are fine
-            "Q3. Do you feel you can contact your parent(s) in a timely manner when you need to during the school day? ": ["Yes", "No", "I prefer not to answer"]
+            [RESTRICTIVENESS_QUESTION]: RESTRICTIVENESS_ORDER,
+            [CONTACT_PARENT_QUESTION]: ["Yes", "No", "I prefer not to answer"]
         };
         
-        // --- Custom Sorting Function ---
+        const PERCENTAGE_COLUMNS = [
+            "Q12. How satisfied are you with your school’s phone policy?",
+            "Q13. How fairly do teachers and staff enforce your school's phone policy? Give your best guess.",
+            "Q14. What percentage of your classmates are using their phone when they shouldn’t be? Give your best guess.",
+        ];
+        
+        // --- Custom Sorting Functions ---
         function normalizeCategoryNames(data) {
-            // Create a map to merge counts for equivalent categories
             const categoryMap = new Map();
-            
             data.forEach(item => {
                 let normalizedCategory = item.category;
-                
-                // Normalize "Neither agree / disagree" to "Neither agree nor disagree"
                 if (item.category === "Neither agree / disagree") {
                     normalizedCategory = "Neither agree nor disagree";
                 }
-                
-                // Add more normalizations here if needed in the future
-                
                 if (categoryMap.has(normalizedCategory)) {
-                    // Merge counts for the same normalized category
                     categoryMap.set(normalizedCategory, categoryMap.get(normalizedCategory) + item.count);
                 } else {
                     categoryMap.set(normalizedCategory, item.count);
                 }
             });
-            
-            // Convert map back to array format
             return Array.from(categoryMap, ([category, count]) => ({ category, count }));
+        }
+
+        function sortPercentageData(data) {
+            const extractNumber = (s) => {
+                const match = String(s).match(/(\d+)/);
+                return match ? parseInt(match[1]) : -1; 
+            };
+            return data.sort((a, b) => {
+                const numA = extractNumber(a.category);
+                const numB = extractNumber(b.category);
+                if (numA >= 0 && numB < 0) return -1;
+                if (numA < 0 && numB >= 0) return 1;
+                if (numA >= 0 && numB >= 0) return numA - numB;
+                return a.category.localeCompare(b.category);
+            });
         }
         
         function applyCustomOrder(column, data) {
-            const customOrder = CUSTOM_COLUMN_ORDERS[column];
+            let customOrder = CUSTOM_COLUMN_ORDERS[column];
             
+            // Check dynamic assignments if explicit match failed
+            if (!customOrder && isGradeQuestion(column)) {
+                customOrder = GRADE_ORDER;
+            }
+            if (!customOrder && isGenderQuestion(column)) {
+                customOrder = GENDER_ORDER;
+            }
+
             if (customOrder) {
-                // Create a map for quick lookup of category index
                 const orderMap = new Map(customOrder.map((item, index) => [item, index]));
-                
-                // Filter out categories not in the custom order (if any) and sort
                 const sortedData = data.filter(d => orderMap.has(d.category)).sort((a, b) => {
                     return orderMap.get(a.category) - orderMap.get(b.category);
                 });
-
-                // Add back any categories that were NOT in the custom order at the end (e.g., "Missing")
                 const unlistedData = data.filter(d => !orderMap.has(d.category));
-                
                 return sortedData.concat(unlistedData);
             } 
-            
-            // For columns with percentage values (Q12, Q13, Q14), we rely on the Python backend
-            // which sorts them numerically (e.g., "10%" comes before "20%").
-            // For all other columns, return data as is.
+            if (PERCENTAGE_COLUMNS.includes(column)) {
+                return sortPercentageData(data);
+            }
             return data;
         }
-
 
         const fileInput = document.getElementById('fileInput');
         const fileName = document.getElementById('fileName');
@@ -216,7 +346,7 @@
                 });
 
                 const data = await response.json();
-                
+
                 if (response.ok) {
                     displayResults(data);
                 } else {
@@ -230,27 +360,30 @@
         }
 
         function displayResults(data) {
-            // Clear previous results
             resultsDiv.innerHTML = '';
             chartsDiv.innerHTML = '';
 
-            let html = '<h2>Summary Statistics</h2>';
+            let html = '<h2>Your School\'s Data</h2>';
+            html += `<div class="stat-item"><strong>Number of Respondents:</strong> ${data.num_rows}</div>`;
+            html += `<div class="stat-item"><strong>Number of Variables:</strong> ${data.num_columns}</div>`;
             
-            html += `<div class="stat-item"><strong>Number of Rows:</strong> ${data.num_rows}</div>`;
-            html += `<div class="stat-item"><strong>Number of Columns:</strong> ${data.num_columns}</div>`;
-            html += `<div class="stat-item"><strong>Columns:</strong> ${data.columns.join(', ')}</div>`;
-            
-            // Numerical Summary Stats
             if (data.summary_stats && Object.keys(data.summary_stats).length > 0) {
                 html += '<h3>Numerical Summary Statistics</h3>';
                 for (const [column, stats] of Object.entries(data.summary_stats)) {
+                    let displayColumn = stripQuestionId(column);
+                    
+                    // NEW: Add unit label to summary statistics title
+                    if (isUsageQuestion(column)) {
+                        displayColumn += " (Units: Hours)";
+                    }
+
                     if (stats.mean !== undefined) { 
                          html += `<div class="stat-item">
-                            <strong>${column}:</strong><br>
+                            <strong>${displayColumn}:</strong><br>
                             Mean: ${stats.mean?.toFixed(2) || 'N/A'}, 
-                            Std: ${stats.std?.toFixed(2) || 'N/A'}, 
-                            Min: ${stats.min?.toFixed(2) || 'N/A'}, 
-                            Max: ${stats.max?.toFixed(2) || 'N/A'}
+                            Standard Deviation: ${stats.std?.toFixed(2) || 'N/A'}, 
+                            Minimum: ${stats.min?.toFixed(2) || 'N/A'}, 
+                            Maximum: ${stats.max?.toFixed(2) || 'N/A'}
                         </div>`;
                     }
                 }
@@ -258,35 +391,68 @@
 
             resultsDiv.innerHTML = html;
             resultsDiv.style.display = 'block';
-
-            // --- Categorical Charts and Feedback Section ---
             
             const OPEN_ENDED_COLUMN = "Q38. Please share any other thoughts you have about your school's phone policy.";
             let chartsGenerated = false;
 
             if (data.responses && Object.keys(data.responses).length > 0) {
-                chartsDiv.innerHTML = '<h2>Categorical Variable Visualizations</h2>';
                 
-                for (const [column, valueCounts] of Object.entries(data.responses)) {
+                // --- 2. SORTING LOGIC ---
+                let columns = Object.keys(data.responses);
+
+                columns.sort((a, b) => {
+                    // Normalize keys for sorting logic to ensure strict grouping
+                    const keyA = isGradeQuestion(a) ? "Grade" : a;
+                    const keyB = isGradeQuestion(b) ? "Grade" : b;
                     
-                    // 1. Filter out open-ended feedback (Q38) and display as a list
+                    const finalKeyA = isGenderQuestion(keyA) ? "Gender" : keyA;
+                    const finalKeyB = isGenderQuestion(keyB) ? "Gender" : keyB;
+
+                    const indexA = DISPLAY_ORDER.indexOf(finalKeyA);
+                    const indexB = DISPLAY_ORDER.indexOf(finalKeyB);
+
+                    if (indexA !== -1 && indexB !== -1) return indexA - indexB;
+                    if (indexA !== -1) return -1;
+                    if (indexB !== -1) return 1;
+                    return finalKeyA.localeCompare(finalKeyB);
+                });
+
+                let currentSection = null;
+
+                // Iterate through the SORTED columns
+                for (const column of columns) {
+                    const valueCounts = data.responses[column];
+                    let displayColumn = stripQuestionId(column);
+                    
+                    // Add unit label for phone usage question chart title
+                    if (isUsageQuestion(column)) {
+                        displayColumn += " (Units: Hours)";
+                    }
+                    
+                    // Handle Open-Ended Feedback separately
                     if (column === OPEN_ENDED_COLUMN) {
                         const feedbackHtml = `
                             <div class="stat-item">
-                                <h3>Open-Ended Feedback: ${column}</h3>
+                                <h3 class="section-header">Open-Ended Feedback</h3>
+                                <h4>${displayColumn}</h4>
                                 <ul class="feedback-list">
                                     ${Object.keys(valueCounts).map(feedback => `<li>${feedback}</li>`).join('')}
                                 </ul>
                             </div>
                         `;
-                        // Append the feedback to the main results div
                         resultsDiv.innerHTML += feedbackHtml;
                         continue;
                     }
                     
-                    // 2. Skip Timestamp or columns with only one meaningful response
                     if (column === 'Timestamp' || Object.keys(valueCounts).length <= 1) {
                         continue;
+                    }
+
+                    // --- Header Injection Logic ---
+                    const sectionTitle = getSectionForColumn(column);
+                    if (sectionTitle && sectionTitle !== currentSection) {
+                        chartsDiv.innerHTML += `<h3 class="section-header">${sectionTitle}</h3>`;
+                        currentSection = sectionTitle;
                     }
 
                     let chartData = Object.entries(valueCounts).map(([key, value]) => ({
@@ -294,23 +460,19 @@
                         count: value
                     }));
                     
-                    // 2.5. Normalize category names (e.g., merge "Neither agree / disagree" with "Neither agree nor disagree")
                     chartData = normalizeCategoryNames(chartData);
-                    
-                    // 3. Apply custom sorting to enforce factor order
                     chartData = applyCustomOrder(column, chartData);
 
-                    // Create a unique ID for each chart container
                     const chartId = `chart-${column.replace(/[^a-zA-Z0-9]/g, '_')}`;
-                    
-                    // Add a title and container for the chart
+                    const isRotated = column === RESTRICTIVENESS_QUESTION;
+
                     chartsDiv.innerHTML += `
                         <div class="chart-container">
-                            <h4>Responses for: ${column}</h4>
+                            <h4>${displayColumn}</h4>
                             <div id="${chartId}"></div>
                         </div>`;
 
-                    renderD3BarChart(`#${chartId}`, chartData);
+                    renderD3BarChart(`#${chartId}`, chartData, column, isRotated);
                     chartsGenerated = true;
                 }
                 
@@ -325,9 +487,8 @@
             errorDiv.style.display = 'block';
         }
 
-        // D3.js RENDERING FUNCTION (Unchanged from previous response)
-        function renderD3BarChart(containerSelector, data) {
-            const margin = {top: 20, right: 30, bottom: 120, left: 60},
+        function renderD3BarChart(containerSelector, data, column, isRotated) {
+            const margin = {top: 20, right: 30, bottom: isRotated ? 60 : 120, left: isRotated ? 200 : 60},
                   width = 500 - margin.left - margin.right,
                   height = 400 - margin.top - margin.bottom;
 
@@ -340,43 +501,97 @@
               .append("g")
                 .attr("transform", `translate(${margin.left},${margin.top})`);
 
-            const x = d3.scaleBand()
-              .range([ 0, width ])
-              .domain(data.map(d => d.category)) // D3 uses the order of the data passed here
-              .padding(0.2);
+            const maxCount = d3.max(data, d => d.count);
             
-            svg.append("g")
-              .attr("transform", `translate(0,${height})`)
-              .call(d3.axisBottom(x))
-              .selectAll("text")
-                .attr("transform", "translate(-10,0)rotate(-45)")
-                .style("text-anchor", "end");
+            if (isRotated) {
+                const x = d3.scaleLinear()
+                  .domain([0, maxCount * 1.1])
+                  .range([0, width]);
+                
+                svg.append("g")
+                  .attr("transform", `translate(0,${height})`)
+                  .call(d3.axisBottom(x).tickFormat(d3.format("d")));
 
-            const y = d3.scaleLinear()
-              .domain([0, d3.max(data, d => d.count) * 1.1])
-              .range([ height, 0]);
-            
-            svg.append("g")
-              .call(d3.axisLeft(y).tickFormat(d3.format("d")));
+                const y = d3.scaleBand()
+                  .range([height, 0])
+                  .domain(data.map(d => d.category))
+                  .padding(0.1);
+                
+                svg.append("g")
+                  .call(d3.axisLeft(y));
 
-            svg.selectAll(".bar")
-              .data(data)
-              .join("rect")
-                .attr("class", "bar")
-                .attr("x", d => x(d.category))
-                .attr("width", x.bandwidth())
-                .attr("y", d => y(d.count))
-                .attr("height", d => height - y(d.count));
-            
-            svg.selectAll(".text")        
-              .data(data)
-              .enter()
-              .append("text")
-              .attr("class","label")
-              .attr("x", d => x(d.category) + x.bandwidth() / 2)
-              .attr("y", d => y(d.count) - 5)
-              .attr("text-anchor", "middle")
-              .text(d => d.count);
+                svg.selectAll(".bar")
+                  .data(data)
+                  .join("rect")
+                    .attr("class", "bar")
+                    .attr("x", x(0))
+                    .attr("y", d => y(d.category))
+                    .attr("height", y.bandwidth())
+                    .attr("width", d => x(d.count));
+
+                svg.append("text")
+                    .attr("class", "x label")
+                    .attr("text-anchor", "middle")
+                    .attr("x", width / 2)
+                    .attr("y", height + margin.bottom - 10)
+                    .text("Number of students");
+
+                svg.selectAll(".text")        
+                  .data(data)
+                  .enter()
+                  .append("text")
+                  .attr("class","label")
+                  .attr("x", d => x(d.count) + 5)
+                  .attr("y", d => y(d.category) + y.bandwidth() / 2 + 5)
+                  .text(d => d.count);
+                    
+            } else {
+                const x = d3.scaleBand()
+                  .range([ 0, width ])
+                  .domain(data.map(d => d.category))
+                  .padding(0.2);
+                
+                svg.append("g")
+                  .attr("transform", `translate(0,${height})`)
+                  .call(d3.axisBottom(x))
+                  .selectAll("text")
+                    .attr("transform", "translate(-10,0)rotate(-45)")
+                    .style("text-anchor", "end");
+
+                const y = d3.scaleLinear()
+                  .domain([0, maxCount * 1.1])
+                  .range([ height, 0]);
+                
+                svg.append("g")
+                  .call(d3.axisLeft(y).tickFormat(d3.format("d")));
+
+                svg.append("text")
+                    .attr("class", "y label")
+                    .attr("text-anchor", "middle")
+                    .attr("y", -margin.left + 15)
+                    .attr("x", -height / 2)
+                    .attr("transform", "rotate(-90)")
+                    .text("Number of students");
+
+                svg.selectAll(".bar")
+                  .data(data)
+                  .join("rect")
+                    .attr("class", "bar")
+                    .attr("x", d => x(d.category))
+                    .attr("width", x.bandwidth())
+                    .attr("y", d => y(d.count))
+                    .attr("height", d => height - y(d.count));
+                
+                svg.selectAll(".text")        
+                  .data(data)
+                  .enter()
+                  .append("text")
+                  .attr("class","label")
+                  .attr("x", d => x(d.category) + x.bandwidth() / 2)
+                  .attr("y", d => y(d.count) - 5)
+                  .attr("text-anchor", "middle")
+                  .text(d => d.count);
+            }
         }
     </script>
 </body>
