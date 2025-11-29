@@ -104,7 +104,7 @@
     <div class="container">
         <h1 style="text-align: center;">Toolkit for Assessing Phones in Schools</h1>
         <p style="text-align: left; margin-top: 0.5rem; margin-bottom: 2rem; color: #666;">
-            This is the data analysis tool for the Toolkit for Assessing Phones in Schools (TAPS), a collaboration between the <strong>Stanford Social Media Lab</strong> and the <strong>NYU Tech and Society Lab</strong>. To use this tool, please download your school's TAPS survey data as a .csv file and then upload it here to view summary statistics and visualizations. Because this tool runs within Docker, it remains on your local machine and is not stored on any server.
+            This is the data analysis tool for the Toolkit for Assessing Phones in Schools (TAPS), a collaboration between the <strong>Stanford Social Media Lab</strong> and the <strong>NYU Tech and Society Lab</strong>. To use this tool, please download your school's TAPS survey data as a .csv file and then upload it here to view summary statistics and visualizations. Because this tool runs within Docker, the data remains on your local machine and is not stored on any server.
             <br>
             <br>
             Please note that this tool is designed specifically for analyzing data collected using the original TAPS survey. Uploading data from a modified or different survey will result in an error. Contact the research team at <a href="mailto:team@ssml.stanford.edu">team@ssml.stanford.edu</a> for assistance.
@@ -148,7 +148,7 @@
             "Gender", 
             "Grade",
             "Estimate how much time you spend on your phone on a typical school day.",
-            "how long do you spend on your phone", 
+            "how long do you spend on your phone", // Handling user's specific text
 
             // Policy Mechanics
             "Q3. Do you feel you can contact your parent(s) in a timely manner when you need to during the school day? ",
@@ -176,7 +176,7 @@
         }
         // Helper: detect usage question
         function isUsageQuestion(column) {
-            return typeof column === 'string' && (column.toLowerCase().includes("how long") || column.toLowerCase().includes("time you spend"));
+            return column.toLowerCase().includes("time do you spend");
         }
 
         // --- NEW: Section Mapping Logic ---
@@ -198,7 +198,7 @@
             
             // Social/Emotional Outcomes: Friends, Q31a (Teasing), Loneliness
             if (column.includes("closer to my friends") || column.startsWith("Q31a") || column.includes("feel lonely")) {
-                return "Social/Emotional Outcomes";
+                return "Social & Emotional Outcomes";
             }
             
             return null; // Unknown section
@@ -370,13 +370,7 @@
             if (data.summary_stats && Object.keys(data.summary_stats).length > 0) {
                 html += '<h3>Numerical Summary Statistics</h3>';
                 for (const [column, stats] of Object.entries(data.summary_stats)) {
-                    let displayColumn = stripQuestionId(column);
-                    
-                    // NEW: Add unit label to summary statistics title
-                    if (isUsageQuestion(column)) {
-                        displayColumn += " (Units: Hours)";
-                    }
-
+                    const displayColumn = stripQuestionId(column);
                     if (stats.mean !== undefined) { 
                          html += `<div class="stat-item">
                             <strong>${displayColumn}:</strong><br>
@@ -424,7 +418,7 @@
                     const valueCounts = data.responses[column];
                     let displayColumn = stripQuestionId(column);
                     
-                    // Add unit label for phone usage question chart title
+                    // Add unit label for phone usage question
                     if (isUsageQuestion(column)) {
                         displayColumn += " (Units: Hours)";
                     }
