@@ -28,7 +28,10 @@
     <div class="container">
         <h1 style="text-align: center;">Toolkit for Assessing Phones in Schools</h1>
         <p style="text-align: left; margin-top: 0.5rem; margin-bottom: 2rem; color: #666;">
-            Select the survey type below, upload your CSV, and view the results.
+            This is the data analysis tool for the Toolkit for Assessing Phones in Schools (TAPS), a collaboration between the <strong>Stanford Social Media Lab</strong> and the <strong>NYU Tech and Society Lab</strong>. To use this tool, please download your school's TAPS survey data as a .csv file and then upload it here to view summary statistics and visualizations. Because this tool runs within Docker, it remains on your local machine and is not stored on any server.
+            <br>
+            <br>
+            Please note that this tool is designed specifically for analyzing data collected using the original TAPS survey. Uploading data from a modified or different survey will result in an error. Contact the research team at <a href="mailto:team@ssml.stanford.edu">team@ssml.stanford.edu</a> for assistance.
         </p>
 
         <div class="upload-section">
@@ -52,206 +55,124 @@
     </div>
 
     <script>
-        // --- 1. SHARED DEFINITIONS ---
-        const AGREEMENT_ORDER = ["Strongly disagree", "Somewhat disagree", "Neither agree nor disagree", "Somewhat agree", "Strongly agree"];
-        const FREQUENCY_ORDER = ["Never", "This did not happen to me", "Less than once a week", "About once a week", "About half the time", "Sometimes", "Most days", "Most of the time", "Always"];
-        const RESTRICTIVENESS_ORDER = ["The policy should be much more restrictive", "The policy should be a little more restrictive", "The policy is just right", "The policy should be a little less restrictive", "The policy should be much less restrictive", "I prefer not to answer"];
-        const YES_NO_ORDER = ["Yes", "No", "I prefer not to answer"];
-        const GENDER_ORDER = ["Female", "Male", "Other"];
-        const GRADE_ORDER = ["9th grade", "10th grade", "11th grade", "12th grade", "Other"];
-
-        // --- 2. CONFIGURATION OBJECT ---
-        const SURVEY_CONFIGS = {
-            "student": {
-                displayOrder: [
-                    "Gender", "Grade", 
-                    "Estimate how much time you spend on your phone on a typical school day.",
-                    "how long do you spend on your phone", 
-                    "Q3. Do you feel you can contact your parent(s) in a timely manner when you need to during the school day? ",
-                    "Q12. How satisfied are you with your school’s phone policy?",
-                    "Q13. How fairly do teachers and staff enforce your school's phone policy? Give your best guess.",
-                    "Q14. What percentage of your classmates are using their phone when they shouldn’t be? Give your best guess.",
-                    "Q15. In your opinion, should your school's phone policy be more or less restrictive than it is now?",
-                    "In the following set of questions, we will ask about how you view your school experience. - In general, I pay attention in class.",
-                    "We are interested in understanding how you feel about your school's phone policy. Please rate your agreement with the following statements about your behavior or feelings since the\npolicy was introduced. “Since the new phone policy was introduced...” - I have felt closer to my friends.",
-                    "Q31a. In recent weeks, how often have you experienced the following DURING school hours? [Someone teased you or called you names.]",
-                    "My school is a place where... - I often feel lonely."
-                ],
-                sections: {
-                    "Demographics": ["Gender", "Grade", "time do you spend"],
-                    "Perceptions of the Policy": ["policy", "satisfied", "enforce", "restrictive"],
-                    "Academic Outcomes": ["pay attention in class"],
-                    "Social & Emotional Outcomes": ["closer to my friends", "Q31a", "feel lonely"]
-                },
-                customOrders: {
-                    "Gender": GENDER_ORDER,
-                    "Grade": GRADE_ORDER,
-                    "In the following set of questions, we will ask about how you view your school experience. - In general, I pay attention in class.": AGREEMENT_ORDER,
-                    "We are interested in understanding how you feel about your school's phone policy. Please rate your agreement with the following statements about your behavior or feelings since the\npolicy was introduced. “Since the new phone policy was introduced...” - I have felt closer to my friends.": AGREEMENT_ORDER,
-                    "My school is a place where... - I often feel lonely.": FREQUENCY_ORDER,
-                    "Q31a. In recent weeks, how often have you experienced the following DURING school hours? [Someone teased you or called you names.]": FREQUENCY_ORDER,
-                    "Q15. In your opinion, should your school's phone policy be more or less restrictive than it is now?": RESTRICTIVENESS_ORDER,
-                    "Q3. Do you feel you can contact your parent(s) in a timely manner when you need to during the school day? ": YES_NO_ORDER
-                },
-                percentageColumns: [
-                    "Q12. How satisfied are you with your school’s phone policy?",
-                    "Q13. How fairly do teachers and staff enforce your school's phone policy? Give your best guess.",
-                    "Q14. What percentage of your classmates are using their phone when they shouldn’t be? Give your best guess."
-                ],
-                openEndedColumns: ["Q38. Please share any other thoughts you have about your school's phone policy."]
-            },
-
-            "parent": {
-                displayOrder: [],
-                sections: {
-                    "Demographics": ["Parent Age", "Child Grade"],
-                    "Policy Views": ["support the policy"]
-                },
-                customOrders: {},
-                percentageColumns: [],
-                openEndedColumns: []
-            },
-
-            "teacher": {
-                displayOrder: [
-                    "Q1. Currently, do you allow personal devices in your classroom to be used by students for educational purposes on a daily basis?",
-                    "Q2. How important is the integration of technology to your everyday teaching practices?  (e.g., showing a YouTube video as an example, Google Classroom, Kahoot, etc.)",
-                    "Q3. Does your school have a phone policy?",
-                    "Q4. Under your school’s phone policy, when are students allowed to use their phones at school? Select all that apply.",
-                    "Q5. How does your school currently restrict access to phones? Select all that apply.",
-                    "Q6. Overall, how satisfied are you with your school's phone policy?",
-                    "Q7. How consistently do teachers and staff enforce your school's phone policy? Give your best guess.",
-                    "Q8. What percentage of your students are using their phone when they shouldn’t be? Give your best guess.",
-                    "Q9. In your opinion, should your school's phone policy be more or less restrictive than it is now?",
-                    "Q12. Please rate the extent to which you agree that the following statements apply to a significant number of your students.  A significant number of my students… [Seem interested in school]",
-                    "Q12. Please rate the extent to which you agree that the following statements apply to a significant number of your students.  A significant number of my students… [Maintain positive and respectful relationships with each other]",
-                    "Q12. Please rate the extent to which you agree that the following statements apply to a significant number of your students.  A significant number of my students… [Seem to care about grades]",
-                    "Q12. Please rate the extent to which you agree that the following statements apply to a significant number of your students.  A significant number of my students… [Have good attendance]",
-                    "Q12. Please rate the extent to which you agree that the following statements apply to a significant number of your students.  A significant number of my students… [Participate in class discussions/activities]",
-                    "Q12. Please rate the extent to which you agree that the following statements apply to a significant number of your students.  A significant number of my students… [Need external disciplinary policies to behave]",
-                    "Q12. Please rate the extent to which you agree that the following statements apply to a significant number of your students.  A significant number of my students… [Are respectful to staff]",
-                    "Q12. Please rate the extent to which you agree that the following statements apply to a significant number of your students.  A significant number of my students… [Persist when tasks are challenging]",
-                    "Q12. Please rate the extent to which you agree that the following statements apply to a significant number of your students.  A significant number of my students… [Demonstrate appropriate effort for task]",
-                    "Q12. Please rate the extent to which you agree that the following statements apply to a significant number of your students.  A significant number of my students… [Are self-motivated]",
-                    "Q14. Please indicate how often these behaviors occur from a significant number of your students. [Have difficulty staying on task]",
-                    "Q14. Please indicate how often these behaviors occur from a significant number of your students. [Yell or scream]",
-                    "Q14. Please indicate how often these behaviors occur from a significant number of your students. [Are easily distracted]",
-                    "Q14. Please indicate how often these behaviors occur from a significant number of your students. [Fail to finish tasks or projects]",
-                    "Q14. Please indicate how often these behaviors occur from a significant number of your students. [Act defiant when told to do something]",
-                    "Q13. Please rate the extent to which the following statements apply to your relationship with your students in general.  [I share warm relationships with my students.]",
-                    "Q13. Please rate the extent to which the following statements apply to your relationship with your students in general.  [My students and I always seem to be struggling with each other.]",
-                    "Q13. Please rate the extent to which the following statements apply to your relationship with your students in general.  [Dealing with my students drains my energy.]",
-                    "Q13. Please rate the extent to which the following statements apply to your relationship with your students in general.  [My students' feelings toward me can be unpredictable or can change suddenly.]",
-                    "Q13. Please rate the extent to which the following statements apply to your relationship with your students in general.  [My interactions with my students make me feel effective and confident.]",
-                    "Q13. Please rate the extent to which the following statements apply to your relationship with your students in general.  [My students seem to feel secure with me.]",
-                    "Q15. Please read each statement and mark the response that best shows how much you agree. In this school… [Adults who work in this school care about the students.]",
-                    "Q15. Please read each statement and mark the response that best shows how much you agree. In this school… [Teachers care about their students.]",
-                    "Q15. Please read each statement and mark the response that best shows how much you agree. In this school… [Students are friendly with each other.]",
-                    "Q15. Please read each statement and mark the response that best shows how much you agree. In this school… [Students care about each other.]",
-                    "Q15. Please read each statement and mark the response that best shows how much you agree. In this school… [Teachers show respect towards parents.]",
-                    "Q15. Please read each statement and mark the response that best shows how much you agree. In this school… [Teachers listen to the concerns of parents.]",
-                    "Q15. Please read each statement and mark the response that best shows how much you agree. In this school… [Students feel safe.]",
-                    "Q15. Please read each statement and mark the response that best shows how much you agree. In this school… [The school rules are fair.]",
-                    "Q15. Please read each statement and mark the response that best shows how much you agree. In this school… [This school makes it clear how students are expected to act.]",
-                    "Q15. Please read each statement and mark the response that best shows how much you agree. In this school… [Students know how they are expected to act.]",
-                    "Q16. Please indicate how strongly you agree or disagree with the following statements about your experience as a teacher at this school.  [I am satisfied with my co-workers’ competence.]",
-                    "Q16. Please indicate how strongly you agree or disagree with the following statements about your experience as a teacher at this school.  [I am satisfied with the behavior among my students.]",
-                    "Q16. Please indicate how strongly you agree or disagree with the following statements about your experience as a teacher at this school.  [I am satisfied with my parent interactions at my school.]",
-                    "Q16. Please indicate how strongly you agree or disagree with the following statements about your experience as a teacher at this school.  [I feel supported by my school’s  administration with respect to our phone policy.]",
-                    "Q16. Please indicate how strongly you agree or disagree with the following statements about your experience as a teacher at this school.  [I enjoy teaching.]",
-                    "Q16. Please indicate how strongly you agree or disagree with the following statements about your experience as a teacher at this school.  [I get frustrated during my time teaching in the classroom.]",
-                    "Q16. Please indicate how strongly you agree or disagree with the following statements about your experience as a teacher at this school.  [Teaching often drains my energy.]",
-                    "Q17. Please rate the extent to which you agree with the following statements about your relationships with the administration at your school. [I feel supported by the administration at my school.]",
-                    "Q17. Please rate the extent to which you agree with the following statements about your relationships with the administration at your school. [I get along well with the administration at my school.]",
-                    "Q17. Please rate the extent to which you agree with the following statements about your relationships with the administration at your school. [I feel connected to the administration at my school.]",
-                    "Q18. The following statements are about your overall experiences with the parents of your students. Please read each item and rate the degree to which you agree or disagree with the statement. [In general, I feel comfortable talking with my students' parents.]",
-                    "Q18. The following statements are about your overall experiences with the parents of your students. Please read each item and rate the degree to which you agree or disagree with the statement. [In general, my students' parents feel comfortable talking with me.]",
-                    "Q18. The following statements are about your overall experiences with the parents of your students. Please read each item and rate the degree to which you agree or disagree with the statement. [In general, I enjoy talking with my students' parents.]",
-                    "Q18. The following statements are about your overall experiences with the parents of your students. Please read each item and rate the degree to which you agree or disagree with the statement. [In general, I have confidence in my students' parents.]",
-                    "Q18. The following statements are about your overall experiences with the parents of your students. Please read each item and rate the degree to which you agree or disagree with the statement. [In general, parents think I am doing good things for their children.]",
-                    "Q21. What grade level(s) do you primarily teach?",
-                    "Q22. Area(s) taught: (Mark all that apply)",
-                    "Q23. At what academic level do you teach the majority of your classes?",
-                    "Q24. How many total years of experience do you have working in education (any role)?\n\nYears:",
-                    "Q25. What is your gender?",
-                    "Q26. With which racial/ethnic groups do you identify? You can select more than one.",
-                    "Q1. Overall, how would you say this new phone policy has changed your school?",
-                    "Q2. Please rate your agreement with the following statements about your students’ behavior or feelings since the _____ [school to add] policy was introduced. “Since the new phone policy that was introduced in _______ [school to add] … [Students seem more focused in class.]",
-                    "Q2. Please rate your agreement with the following statements about your students’ behavior or feelings since the _____ [school to add] policy was introduced. “Since the new phone policy that was introduced in _______ [school to add] … [Students seem less distracted.]",
-                    "Q2. Please rate your agreement with the following statements about your students’ behavior or feelings since the _____ [school to add] policy was introduced. “Since the new phone policy that was introduced in _______ [school to add] … [Students have developed better social skills.]",
-                    "Q2. Please rate your agreement with the following statements about your students’ behavior or feelings since the _____ [school to add] policy was introduced. “Since the new phone policy that was introduced in _______ [school to add] … [Students have formed closer bonds with their peers.]",
-                    "Q2. Please rate your agreement with the following statements about your students’ behavior or feelings since the _____ [school to add] policy was introduced. “Since the new phone policy that was introduced in _______ [school to add] … [Students are being left out or excluded more.]",
-                    "Q2. Please rate your agreement with the following statements about your students’ behavior or feelings since the _____ [school to add] policy was introduced. “Since the new phone policy that was introduced in _______ [school to add] … [Students seem more anxious without their phones.]",
-                    "Q2. Please rate your agreement with the following statements about your students’ behavior or feelings since the _____ [school to add] policy was introduced. “Since the new phone policy that was introduced in _______ [school to add] … [Students have talked to more people during lunch or breaks.]",
-                    "Q2. Please rate your agreement with the following statements about your students’ behavior or feelings since the _____ [school to add] policy was introduced. “Since the new phone policy that was introduced in _______ [school to add] … [Students seem less pressured to check their phones.]",
-                    "Q2. Please rate your agreement with the following statements about your students’ behavior or feelings since the _____ [school to add] policy was introduced. “Since the new phone policy that was introduced in _______ [school to add] … [There have been fewer discipline problems at my school.]",
-                    "Q2. Please rate your agreement with the following statements about your students’ behavior or feelings since the _____ [school to add] policy was introduced. “Since the new phone policy that was introduced in _______ [school to add] … [There seems to be less social drama between students.]",
-                    "Q2. Please rate your agreement with the following statements about your students’ behavior or feelings since the _____ [school to add] policy was introduced. “Since the new phone policy that was introduced in _______ [school to add] … [Academic outcomes have improved.]",
-                    "Q2. Please rate your agreement with the following statements about your students’ behavior or feelings since the _____ [school to add] policy was introduced. “Since the new phone policy that was introduced in _______ [school to add] … [Class disruptions have declined.]",
-                    "Q2. Please rate your agreement with the following statements about your students’ behavior or feelings since the _____ [school to add] policy was introduced. “Since the new phone policy that was introduced in _______ [school to add] … [Lack of smartphone access in class has impaired teaching.]",
-                    "Q2. Please rate your agreement with the following statements about your students’ behavior or feelings since the _____ [school to add] policy was introduced. “Since the new phone policy that was introduced in _______ [school to add] … [Nothing has really changed for students.]"
-                ],
-                sections: {
-                    "Demographics": ["years of experience", "what level", "Area(s) taught", "Q21", "Q22", "Q23", "Q24", "Q25"],
-                    "Classroom Observations": ["Q12", "Q14", "Q15"],
-                    "Policy Views": ["Q6", "Q7", "Q8", "Q9", "restrictive"],
-                    "Job Satisfaction & Stress": ["Q16", "Q17", "Q18", "Q19", "Q20"],
-                    "Impact of New Policy": ["Q1. Overall", "Since the new phone policy"]
-                },
-                customOrders: {
-                    "Q9. In your opinion, should your school's phone policy be more or less restrictive than it is now?": RESTRICTIVENESS_ORDER,
-                    "Q12. Please rate the extent to which you agree that the following statements apply to a significant number of your students.  A significant number of my students… [Seem interested in school]": AGREEMENT_ORDER,
-                    "Q13. Please rate the extent to which the following statements apply to your relationship with your students in general.  [I share warm relationships with my students.]": AGREEMENT_ORDER,
-                    "Q14. Please indicate how often these behaviors occur from a significant number of your students. [Have difficulty staying on task]": FREQUENCY_ORDER,
-                    "Q15. Please read each statement and mark the response that best shows how much you agree. In this school… [Adults who work in this school care about the students.]": AGREEMENT_ORDER,
-                    "Q16. Please indicate how strongly you agree or disagree with the following statements about your experience as a teacher at this school.  [I am satisfied with my co-workers’ competence.]": AGREEMENT_ORDER,
-                    "Q17. Please rate the extent to which you agree with the following statements about your relationships with the administration at your school. [I feel supported by the administration at my school.]": AGREEMENT_ORDER,
-                    "Q18. The following statements are about your overall experiences with the parents of your students. Please read each item and rate the degree to which you agree or disagree with the statement. [In general, I feel comfortable talking with my students' parents.]": AGREEMENT_ORDER,
-                    "Q19. Please rate your level of agreement with the following statements about your stress at school. I feel stressed for…  [not having support from the administrators at my school.]": AGREEMENT_ORDER,
-                    "Q20. Please rate how often you experience the following: [I feel emotionally drained from my work.]": FREQUENCY_ORDER,
-                    "Q1. Overall, how would you say this new phone policy has changed your school?": ["Significantly for the worse", "Somewhat for the worse", "No change", "Somewhat for the better", "Significantly for the better"]
-                },
-                percentageColumns: [
-                     "Q8. What percentage of your students are using their phone when they shouldn’t be? Give your best guess."
-                ],
-                openEndedColumns: [
-                    "Q10. What challenges have you faced with implementing and/or enforcing the phone policy?",
-                    "Q11. Do you have any suggestions for overcoming those barriers?",
-                    "Q27. Please share any other major changes at this school within the past school year that might have affected student behavior or school climate (e.g., policy changes, large student turnover, etc.).",
-                    "Q28. Please share any other thoughts you have about your school's phone policy.",
-                    "Q29. Is there anything else you want to share with us?"
-                ]
-            },
-
-            "admin": {
-                displayOrder: [],
-                sections: {
-                    "School Culture": ["discipline"],
-                    "Policy Logistics": ["enforcement"]
-                },
-                customOrders: {},
-                percentageColumns: [],
-                openEndedColumns: []
-            }
-        };
-
-        // --- 3. HELPER FUNCTIONS ---
+        // --- COLUMN NAME CLEANUP FUNCTION ---
         function stripQuestionId(columnName) {
             const regex = /^Q\d+[a-zA-Z]*[\.\s\n]*\s*/;
             const cleanedName = columnName.replace(regex, '');
-            return cleanedName.length < columnName.length ? cleanedName.trim() : columnName;
-        }
-
-        function getSectionForColumn(column, config) {
-            if (!config || !config.sections) return null;
-            for (const [sectionTitle, keywords] of Object.entries(config.sections)) {
-                if (keywords.some(keyword => column.includes(keyword) || column.startsWith(keyword))) {
-                    return sectionTitle;
-                }
+            if (cleanedName.length < columnName.length) {
+                return cleanedName.trim();
             }
-            return null;
+            return columnName;
         }
 
+        // --- 1. DEFINED DISPLAY ORDER ---
+        const DISPLAY_ORDER = [
+            // Demographics (Canonical Keys)
+            "Gender", 
+            "Grade",
+            "Estimate how much time you spend on your phone on a typical school day.",
+            "how long do you spend on your phone", // Handling user's specific text
+
+            // Policy Mechanics
+            "Q3. Do you feel you can contact your parent(s) in a timely manner when you need to during the school day? ",
+            "Q12. How satisfied are you with your school’s phone policy?",
+            "Q13. How fairly do teachers and staff enforce your school's phone policy? Give your best guess.",
+            "Q14. What percentage of your classmates are using their phone when they shouldn’t be? Give your best guess.",
+            "Q15. In your opinion, should your school's phone policy be more or less restrictive than it is now?",
+
+            // Academic Impact
+            "In the following set of questions, we will ask about how you view your school experience. - In general, I pay attention in class.",
+
+            // Social/Emotional Impact
+            "We are interested in understanding how you feel about your school's phone policy. Please rate your agreement with the following statements about your behavior or feelings since the\npolicy was introduced. “Since the new phone policy was introduced...” - I have felt closer to my friends.",
+            "Q31a. In recent weeks, how often have you experienced the following DURING school hours? [Someone teased you or called you names.]",
+            "My school is a place where... - I often feel lonely."
+        ];
+
+        // Helper: treat any variant containing the substring as a grade question
+        function isGradeQuestion(column) {
+            return typeof column === 'string' && column.toLowerCase().includes("grade");
+        }
+        // Helper: detect gender question variants
+        function isGenderQuestion(column) {
+            return typeof column === 'string' && column.toLowerCase().includes("gender");
+        }
+        // Helper: detect usage question
+        function isUsageQuestion(column) {
+            return column.toLowerCase().includes("time do you spend");
+        }
+
+        // --- NEW: Section Mapping Logic ---
+        function getSectionForColumn(column) {
+            // Include Usage in Demographics section
+            if (isGenderQuestion(column) || isGradeQuestion(column) || isUsageQuestion(column)) {
+                return "Demographics";
+            }
+            
+            // Perceptions of the Policy: Q3, Q12, Q13, Q14, Q15
+            if (column.startsWith("Q3.") || column.startsWith("Q12.") || column.startsWith("Q13.") || column.startsWith("Q14.") || column.startsWith("Q15.")) {
+                return "Perceptions of the Policy";
+            }
+            
+            // Academic Outcomes: Attention in class
+            if (column.includes("pay attention in class")) {
+                return "Academic Outcomes";
+            }
+            
+            // Social/Emotional Outcomes: Friends, Q31a (Teasing), Loneliness
+            if (column.includes("closer to my friends") || column.startsWith("Q31a") || column.includes("feel lonely")) {
+                return "Social & Emotional Outcomes";
+            }
+            
+            return null; // Unknown section
+        }
+
+        // --- CUSTOM FACTOR ORDER DEFINITIONS ---
+        const AGREEMENT_ORDER = [
+            "Strongly disagree", "Somewhat disagree", "Neither agree nor disagree", "Somewhat agree", "Strongly agree"
+        ];
+
+        const FREQUENCY_ORDER = [
+            "Never", "This did not happen to me", "Less than once a week", "About once a week", 
+            "About half the time", "Sometimes", "Most days", "Most of the time", "Always"
+        ];
+
+        const RESTRICTIVENESS_ORDER = [
+            "The policy should be much more restrictive", "The policy should be a little more restrictive", 
+            "The policy is just right", "The policy should be a little less restrictive", 
+            "The policy should be much less restrictive", "I prefer not to answer"
+        ];
+
+        const GENDER_ORDER = [
+            "Female", "Male", "Non-binary", "Genderqueer", "Prefer not to say", "Other"
+        ];
+        
+        const GRADE_ORDER = [
+            "9th grade", "10th grade", "11th grade", "12th grade", "Other"
+        ];
+
+        const RESTRICTIVENESS_QUESTION = "Q15. In your opinion, should your school's phone policy be more or less restrictive than it is now?";
+        const CONTACT_PARENT_QUESTION = "Q3. Do you feel you can contact your parent(s) in a timely manner when you need to during the school day? ";
+        const LONELINESS_QUESTION = "My school is a place where... - I often feel lonely.";
+
+        const CUSTOM_COLUMN_ORDERS = {
+            "Gender": GENDER_ORDER,
+            "Grade": GRADE_ORDER,
+            "In the following set of questions, we will ask about how you view your school experience. - In general, I pay attention in class.": AGREEMENT_ORDER,
+            [LONELINESS_QUESTION]: FREQUENCY_ORDER,
+            "We are interested in understanding how you feel about your school's phone policy. Please rate your agreement with the following statements about your behavior or feelings since the\npolicy was introduced. “Since the new phone policy was introduced...” - I have felt closer to my friends.": AGREEMENT_ORDER,
+            "Q31a. In recent weeks, how often have you experienced the following DURING school hours? [Someone teased you or called you names.]": FREQUENCY_ORDER,
+            [RESTRICTIVENESS_QUESTION]: RESTRICTIVENESS_ORDER,
+            [CONTACT_PARENT_QUESTION]: ["Yes", "No", "I prefer not to answer"]
+        };
+        
+        const PERCENTAGE_COLUMNS = [
+            "Q12. How satisfied are you with your school’s phone policy?",
+            "Q13. How fairly do teachers and staff enforce your school's phone policy? Give your best guess.",
+            "Q14. What percentage of your classmates are using their phone when they shouldn’t be? Give your best guess.",
+        ];
+        
+        // --- Custom Sorting Functions ---
         function normalizeCategoryNames(data) {
             const categoryMap = new Map();
             data.forEach(item => {
@@ -393,7 +314,13 @@
             if (data.summary_stats && Object.keys(data.summary_stats).length > 0) {
                 html += '<h3>Numerical Summary Statistics</h3>';
                 for (const [column, stats] of Object.entries(data.summary_stats)) {
-                    const displayColumn = stripQuestionId(column);
+                    let displayColumn = stripQuestionId(column);
+                    
+                    // NEW: Add unit label to summary statistics title
+                    if (isUsageQuestion(column)) {
+                        displayColumn += " (Units: Hours)";
+                    }
+
                     if (stats.mean !== undefined) { 
                          html += `<div class="stat-item">
                             <strong>${displayColumn}:</strong><br>
@@ -428,7 +355,8 @@
                     const valueCounts = data.responses[column];
                     let displayColumn = stripQuestionId(column);
                     
-                    if (column.toLowerCase().includes("time do you spend")) {
+                    // Add unit label for phone usage question
+                    if (isUsageQuestion(column)) {
                         displayColumn += " (Units: Hours)";
                     }
                     
