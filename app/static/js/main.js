@@ -17,24 +17,155 @@ const SECTION_PRIORITY = {
 // --- 2. CONFIGURATION OBJECT ---
 
 const STUDENT_DISPLAY_ORDER = [
-    "Gender", "Grade", "Estimate how much time you spend on your phone on a typical school day.",
+    "Q30. What grade are you in? ",
+    "Q33. What is your gender?",
+    "Q1. Do you have a cell phone?",
+    "Q2. If yes, is it a smartphone with apps and access to the internet?",
     "Q3. Do you feel you can contact your parent(s) in a timely manner when you need to during the school day? ",
-    "Q12. How satisfied are you with your school’s phone policy?",
-    "Q13. How fairly do teachers and staff enforce your school's phone policy? Give your best guess.",
-    "Q14. What percentage of your classmates are using their phone when they shouldn’t be? Give your best guess.",
-    "Q15. In your opinion, should your school's phone policy be more or less restrictive than it is now?",
-    "In the following set of questions, we will ask about how you view your school experience. - In general, I pay attention in class.",
-    "We are interested in understanding how you feel about your school's phone policy. Please rate your agreement with the following statements about your behavior or feelings since the\npolicy was introduced. “Since the new phone policy was introduced...” - I have felt closer to my friends.",
-    "Q31a. In recent weeks, how often have you experienced the following DURING school hours? [Someone teased you or called you names.]",
-    "My school is a place where... - I often feel lonely."
+    "Do you bring a phone to school?",
+    "If you bring a phone to school, do you use it for school purposes, like classwork?",
+    "If you bring a phone to school, do you use it for personal reasons, like social media or talking to friends?",
+    "Q5. On an average school day (from when you arrive at school to when you leave), how much time do you spend using your phone? (in hours)",
+    "Q7. Do you have a job? ",
+    "Q10. Does your school have a phone policy? ",
+    "Q12. How satisfied are you with your school's phone policy?",
+    "Q14. How consistently do teachers and staff enforce your school's phone policy? Give your best guess. ",
+    "Q15. What percentage of your classmates are using their phone when they shouldn't be? Give your best guess. ",
+    "Q16. In your opinion, should your school's phone policy be more or less restrictive than it is now?",
+    "Q17. In the following set of questions, we will ask about how you view your school experience. [In general, I pay attention in class.]",
+    "Q17. In the following set of questions, we will ask about how you view your school experience. [I feel like I belong at school.]",
+    "Q17. In the following set of questions, we will ask about how you view your school experience. [I often feel lonely at school.]",
+    "Q17. In the following set of questions, we will ask about how you view your school experience. [In general, I enjoy going to school.]",
+    "Q21. On school nights, how many hours of sleep do you usually get? (in hours) ",
+    "Q23. During the past 7 days, on how many days were you physically active for a total of at least 60 minutes per day? (Add up all the time you spent in any kind of physical activity that increased your heart rate and made you breathe hard some of the time.)",
+    "Q25. Now, here are some questions about you. [Overall, I am happy with myself.]",
+    "Q26. In the past four weeks, how often have you experienced the following? [I have no energy for things.]",
+    "Q26. In the past four weeks, how often have you experienced the following? [I feel sad or empty.]",
+    "Q27. In recent weeks, how often have you experienced the following during school? [Someone teased you or called you names.]",
+    "Q1. Overall, how would you say your school's phone policy has changed your school?",
+    "Q2. Please rate your agreement with the following statements about your behavior or feelings since the _____ [school to add] policy was introduced. \"Since the new phone policy that was introduced in _______ [school to add] … [I have focused better in class.]",
+    "Q2. Please rate your agreement with the following statements about your behavior or feelings since the _____ [school to add] policy was introduced. \"Since the new phone policy that was introduced in _______ [school to add] … [I have had fewer distractions.]",
+    "Q2. Please rate your agreement with the following statements about your behavior or feelings since the _____ [school to add] policy was introduced. \"Since the new phone policy that was introduced in _______ [school to add] … [I have felt closer to my friends.]",
+    "Q2. Please rate your agreement with the following statements about your behavior or feelings since the _____ [school to add] policy was introduced. \"Since the new phone policy that was introduced in _______ [school to add] … [I have felt less stressed.]",
+    "Q2. Please rate your agreement with the following statements about your behavior or feelings since the _____ [school to add] policy was introduced. \"Since the new phone policy that was introduced in _______ [school to add] … [My grades have improved.]"
 ];
+
+const TEACHER_DISPLAY_ORDER = [
+    "Q24. What grade level(s) do you primarily teach? ",
+    "Q28. What is your gender?",
+    "Q1. Currently, do you allow personal devices in your classroom to be used by students for educational purposes on a daily basis? ",
+    "Q2. How important is the integration of technology to your everyday teaching practices?  (e.g., showing a YouTube video as an example, Google Classroom, Kahoot, etc.)",
+    "Q3. Does your school have a phone policy?",
+    "Q6. Overall, how satisfied are you with your school's phone policy? ",
+    "Q7. How consistently do teachers and staff enforce your school's phone policy? Give your best guess. ",
+    "Q8. What percentage of your students are using their phone when they shouldn't be? Give your best guess. ",
+    "Q9. In your opinion, should your school's phone policy be more or less restrictive than it is now?",
+    "Q12. Please rate the extent to which you agree that the following statements apply to your students.  A significant number of my students\u2026 [Seem interested in school]",
+    "Q12. Please rate the extent to which you agree that the following statements apply to your students.  A significant number of my students\u2026 [Maintain positive and respectful relationships with each other]",
+    "Q12. Please rate the extent to which you agree that the following statements apply to your students.  A significant number of my students\u2026 [Seem to care about grades]",
+    "Q12. Please rate the extent to which you agree that the following statements apply to your students.  A significant number of my students\u2026 [Have good attendance]",
+    "Q12. Please rate the extent to which you agree that the following statements apply to your students.  A significant number of my students\u2026 [Are respectful to staff]",
+    "Q13. Please rate the extent to which the following statements apply to your relationship with your students in general.  [I share warm relationships with my students.]",
+    "Q13. Please rate the extent to which the following statements apply to your relationship with your students in general.  [My students and I always seem to be struggling with each other.]",
+    "Q13. Please rate the extent to which the following statements apply to your relationship with your students in general.  [Dealing with my students drains my energy.]",
+    "Q14. Please indicate how often these behaviors occur from a significant number of your students. [Have difficulty staying on task]",
+    "Q14. Please indicate how often these behaviors occur from a significant number of your students. [Are easily distracted]",
+    "Q14. Please indicate how often these behaviors occur from a significant number of your students. [Act defiant when told to do something]",
+    "Q15. Please read each statement and mark the response that best shows how much you agree. In this school\u2026 [Adults who work in this school care about the students.]",
+    "Q15. Please read each statement and mark the response that best shows how much you agree. In this school\u2026 [Students feel safe.]",
+    "Q15. Please read each statement and mark the response that best shows how much you agree. In this school\u2026 [The school rules are fair.]",
+    "Q16. Please indicate how strongly you agree or disagree with the following statements about your experience as a teacher at this school.  [I am satisfied with my co-workers' competence.]",
+    "Q16. Please indicate how strongly you agree or disagree with the following statements about your experience as a teacher at this school.  [I am satisfied with the behavior among my students.]",
+    "Q16. Please indicate how strongly you agree or disagree with the following statements about your experience as a teacher at this school.  [I feel supported by my school's  administration with respect to our phone policy.]",
+    "Q16. Please indicate how strongly you agree or disagree with the following statements about your experience as a teacher at this school.  [I enjoy teaching.]",
+    "Q16. Please indicate how strongly you agree or disagree with the following statements about your experience as a teacher at this school.  [Teaching often drains my energy.]",
+    "Q17. Please rate the extent to which you agree with the following statements about your relationships with the administration at your school. [I feel supported by the administration at my school.]",
+    "Q19. Please rate your level of agreement with the following statements about your stress at school. I feel stressed for\u2026  [having to manage student behaviors.]",
+    "Q19. Please rate your level of agreement with the following statements about your stress at school. I feel stressed for\u2026  [having too much teaching work to do.]",
+    "Q19. Please rate your level of agreement with the following statements about your stress at school. I feel stressed for\u2026  [not being able to meet the diverse learning needs of my students.]",
+    "Q20. Please rate how often you experience the following. [I feel emotionally drained from my work.]",
+    "Q20. Please rate how often you experience the following. [I feel used up at the end of the workday.]",
+    "Q20. Please rate how often you experience the following. [I feel burned out from my work.]",
+    "Q1. Overall, how would you say this new phone policy has changed your school?",
+    "Q2. Please rate your agreement with the following statements about your students' behavior or feelings since the _____ [school to add] policy was introduced. \"Since the new phone policy that was introduced in _______ [school to add] \u2026 [Students seem more focused in class.]",
+    "Q2. Please rate your agreement with the following statements about your students' behavior or feelings since the _____ [school to add] policy was introduced. \"Since the new phone policy that was introduced in _______ [school to add] \u2026 [Students seem less distracted.]",
+    "Q2. Please rate your agreement with the following statements about your students' behavior or feelings since the _____ [school to add] policy was introduced. \"Since the new phone policy that was introduced in _______ [school to add] \u2026 [Students have developed better social skills.]",
+    "Q2. Please rate your agreement with the following statements about your students' behavior or feelings since the _____ [school to add] policy was introduced. \"Since the new phone policy that was introduced in _______ [school to add] \u2026 [Students have formed closer bonds with their peers.]",
+    "Q2. Please rate your agreement with the following statements about your students' behavior or feelings since the _____ [school to add] policy was introduced. \"Since the new phone policy that was introduced in _______ [school to add] \u2026 [There have been fewer discipline problems at my school.]",
+    "Q2. Please rate your agreement with the following statements about your students' behavior or feelings since the _____ [school to add] policy was introduced. \"Since the new phone policy that was introduced in _______ [school to add] \u2026 [Academic outcomes have improved.]",
+];
+
+const PARENT_DISPLAY_ORDER = [
+    "Q1. What grade is your child in?",
+    "Q16. What is the highest level of education you have completed?",
+    "Q14. What is your relationship to the child whose school is administering this survey?",
+    "Q2. Does your child have a cell phone? ",
+    "Q3. At what age did your child get their first smartphone (with apps and can access the internet)? ",
+    "Q4. What type of phone does your child use?",
+    "Q5. Do they bring their phone to school?  ",
+    "Q6. During a typical school day, how many times a day do you contact your child by phone (e.g., text messages, phone calls)?",
+    "Q7. When you have conflicts with your child, how often are they related to their cell phone use? (e.g., screen time, boundaries, or access)",
+    "Q8. Do you feel you can reach your child in a timely manner during the school day when needed? ",
+    "Q9. In the past four weeks, how often has your child displayed the following behaviors? [Acted defiant or resistant to rules]",
+    "Q9. In the past four weeks, how often has your child displayed the following behaviors? [Was easily distracted]",
+    "Q9. In the past four weeks, how often has your child displayed the following behaviors? [Did not pay attention when directly spoken to]",
+    "Q9. In the past four weeks, how often has your child displayed the following behaviors? [Rushed through tasks in order to get back to their phone]",
+    "Q9. In the past four weeks, how often has your child displayed the following behaviors? [Slept with their phone in bedroom]",
+    "Q10. Please rate how strongly you agree or disagree with the following statements about your child's teacher. (If your child has multiple teachers, please consider the one your family interacts with most frequently.) [We have a close and mutually respectful relationship.]",
+    "Q10. Please rate how strongly you agree or disagree with the following statements about your child's teacher. (If your child has multiple teachers, please consider the one your family interacts with most frequently.) [I feel that the teacher pays attention to my suggestions and concerns.]",
+    "Q10. Please rate how strongly you agree or disagree with the following statements about your child's teacher. (If your child has multiple teachers, please consider the one your family interacts with most frequently.) [My child's teacher is doing good things for my child.]",
+    "Q11. In the last month, how often have you experienced the following?  [I've felt that I'm unable to control important aspects of my child's safety while they're at school.]",
+    "Q11. In the last month, how often have you experienced the following?  [I've felt nervous or stressed about not being able to communicate with my child during school hours.]",
+    "Q11. In the last month, how often have you experienced the following?  [I've felt confident in my ability to handle parenting challenges.]",
+    "Q1. Please rate your agreement with the following statements about your child's behavior or feelings since the _____ [school to add] policy was introduced. \"Since the new phone policy that was introduced in _______ [school to add] … [My child seems to be able to focus better.]",
+    "Q1. Please rate your agreement with the following statements about your child's behavior or feelings since the _____ [school to add] policy was introduced. \"Since the new phone policy that was introduced in _______ [school to add] … [My child has used their phone more before and after school.]",
+    "Q1. Please rate your agreement with the following statements about your child's behavior or feelings since the _____ [school to add] policy was introduced. \"Since the new phone policy that was introduced in _______ [school to add] … [My child seems to be in a better mood.]"
+];
+
+const ADMIN_DISPLAY_ORDER = [
+    "Q27. What is your gender?",
+    "Q26. How many total years of experience do you have working in education (any role)?",
+    "Q1. Which of the following devices are restricted under your school's phone policy? Check all that apply.",
+    "Q2. Under your school's phone policy, when are students allowed to use their phones at school? Select all that apply.",
+    "Q3. How does your school restrict access to phones? Select all that apply.",
+    "Q4. Has your school's phone policy changed since the previous academic year?",
+    "Q5. How satisfied are you with your school's phone policy?",
+    "Q6. How consistently do teachers and staff enforce your school's phone policy? Give your best guess.",
+    "Q7. What percentage of your students are using their phone when they shouldn't be? Give your best guess.",
+    "Q8. In your opinion, should your school's phone policy be more or less restrictive than it is now?",
+    "Q10. Please indicate the level of stress you experience from each of the following aspects of your school's phone policy: [Complying with state, federal, and organizational rules and policies]",
+    "Q10. Please indicate the level of stress you experience from each of the following aspects of your school's phone policy: [Trying to resolve parent/school conflicts]",
+    "Q10. Please indicate the level of stress you experience from each of the following aspects of your school's phone policy: [Handling student discipline problems]",
+    "Q11. How strongly do you agree or disagree with the following statements about this school? [I have positive relationships with the faculty at my school.]",
+    "Q11. How strongly do you agree or disagree with the following statements about this school? [I have positive relationships with the parents/guardians of the kids at my school.]",
+    "Q11. How strongly do you agree or disagree with the following statements about this school? [Overall, I have good relationships with the students at my school.]",
+    "Q11. How strongly do you agree or disagree with the following statements about this school? [Dealing with the students at my school drains my energy.]",
+    "Q11. How strongly do you agree or disagree with the following statements about this school? [Students are talking with each other between classes.]",
+    "Q15. What is the average GPA at this school, including the standard deviation?",
+    "Q16. What is the average standardized test score at this school, including the standard deviation? (Please specify the test used and average score.)",
+    "Q17. For this school year, what is the Average Daily Attendance (ADA) percentage at this school? (Round to the nearest whole percent)",
+    "Q18. For this school year, what is this school's suspension rate? (Round to the nearest whole percent)",
+    "Q19. How many reported bullying incidents have there been this school year? ",
+    "Q20. How many reported cyberbullying incidents have there been this school year? ",
+    "Q21. For this school year, how many documented fights occurred at school?",
+    "Q22.  For this school year, how many mental health referrals were recorded?",
+    "Q1. Overall, how would you say this phone policy has changed your school?",
+    "Q2. Please rate your agreement with the following statements about your students' behavior or feelings since the _____ [school to add] policy was introduced. \"Since the new phone policy that was introduced in _______ [school to add] \u2026 [Students seem more focused in class.]",
+    "Q2. Please rate your agreement with the following statements about your students' behavior or feelings since the _____ [school to add] policy was introduced. \"Since the new phone policy that was introduced in _______ [school to add] \u2026 [Students seem less distracted.]",
+    "Q2. Please rate your agreement with the following statements about your students' behavior or feelings since the _____ [school to add] policy was introduced. \"Since the new phone policy that was introduced in _______ [school to add] \u2026 [Students have developed better social skills.]",
+    "Q2. Please rate your agreement with the following statements about your students' behavior or feelings since the _____ [school to add] policy was introduced. \"Since the new phone policy that was introduced in _______ [school to add] \u2026 [Students have formed closer bonds with their peers.]",
+    "Q2. Please rate your agreement with the following statements about your students' behavior or feelings since the _____ [school to add] policy was introduced. \"Since the new phone policy that was introduced in _______ [school to add] \u2026 [There have been fewer discipline problems at my school.]",
+    "Q2. Please rate your agreement with the following statements about your students' behavior or feelings since the _____ [school to add] policy was introduced. \"Since the new phone policy that was introduced in _______ [school to add] \u2026 [Academic outcomes have improved.]",
+];
+
 
 function getSurveyConfigs() {
     return {
         "student": {
             displayOrder: STUDENT_DISPLAY_ORDER,
             openEndedColumns: [
-                "Please share any other thoughts"
+                "Please share any other thoughts",
+                "Is there anything else you want to share"
             ],
             sectionPriority: {
                 "Demographics": 0,
@@ -45,7 +176,7 @@ function getSurveyConfigs() {
             }
         },
         "parent": {
-            displayOrder: [],
+            displayOrder: PARENT_DISPLAY_ORDER,
             openEndedColumns: [
                 "Please share any other thoughts",
                 "Is there anything else you want to share"
@@ -59,10 +190,13 @@ function getSurveyConfigs() {
             }
         },
         "teacher": {
-            displayOrder: [],
+            displayOrder: TEACHER_DISPLAY_ORDER,
             openEndedColumns: [
                 "What challenges have you faced",
-                "Do you have any suggestions for overcoming"
+                "Do you have any suggestions for overcoming",
+                "Please share any other major changes",
+                "Please share any other thoughts",
+                "Is there anything else you want to share"
             ],
             sectionPriority: {
                 "Demographics": 0,
@@ -73,9 +207,9 @@ function getSurveyConfigs() {
             }
         },
         "admin": {
-            displayOrder: [],
+            displayOrder: ADMIN_DISPLAY_ORDER,
             openEndedColumns: [
-                "Overall, how would you say this phone policy has changed your school",
+                "Overall, how would you say",
                 "Please share any other major changes",
                 "Please share any other thoughts",
                 "Is there anything else you want to share",
@@ -86,8 +220,8 @@ function getSurveyConfigs() {
                 "Demographics": 0,
                 "School Phone Policy": 1,
                 "Please indicate the level of stress you experience from each of the following aspects of your school's phone policy:": 2,
-                "School Characteristics": 3,
-                "School Experience": 4,
+                "School Experience": 3,
+                "School Metrics": 4,
                 "Academic Outcomes": 5,
                 "Social & Emotional Outcomes": 6,
                 "Student Behaviors": 7
@@ -243,7 +377,64 @@ function getSectionForColumn(column) {
         lower.includes("less social drama") ||
         lower.includes("drains my energy") ||
         lower.includes("nervous or stressed") ||
-        lower.includes("unable to control important aspects of my child's safety")
+        lower.includes("unable to control important aspects of my child's safety") ||
+        lower.includes("warm relationships with my students") ||
+        lower.includes("struggling with each other") ||
+        lower.includes("formed closer bonds") ||
+        lower.includes("left out or excluded")
+    );
+
+    const isTeacherSchoolClimate = (
+        lower.includes("q12.") && lower.includes("significant number of my students") ||
+        lower.includes("q13.") && lower.includes("relationship with your students") ||
+        lower.includes("q15.") && lower.includes("in this school") ||
+        lower.includes("adults who work in this school") ||
+        lower.includes("students feel safe") ||
+        lower.includes("school rules are fair") ||
+        lower.includes("students are friendly")
+    );
+
+    const isTeacherExperience = (
+        lower.includes("q16.") && lower.includes("experience as a teacher") ||
+        lower.includes("q17.") && lower.includes("administration") ||
+        lower.includes("q18.") && lower.includes("parents of your students") ||
+        lower.includes("satisfied with my co-workers") ||
+        lower.includes("feel supported by my school") ||
+        lower.includes("feel supported by the administration") ||
+        lower.includes("comfortable talking with") ||
+        lower.includes("confidence in") ||
+        lower.includes("enjoy teaching") ||
+        lower.includes("i enjoy talking with")
+    );
+
+    const isTeacherStress = (
+        lower.includes("q19.") && lower.includes("stress at school") ||
+        lower.includes("q20.") && lower.includes("emotionally drained") ||
+        lower.includes("feel used up") ||
+        lower.includes("burned out from my work") ||
+        lower.includes("feel stressed for") ||
+        lower.includes("end of my rope")
+    );
+
+    const isParentChildBehavior = (
+        lower.includes("q9.") && lower.includes("past four weeks") ||
+        lower.includes("acted defiant or resistant") ||
+        lower.includes("easily distracted") ||
+        lower.includes("did not pay attention when directly spoken") ||
+        lower.includes("rushed through tasks") ||
+        lower.includes("slept with their phone")
+    );
+
+    const isParentTeacherRelationship = (
+        lower.includes("q10.") && lower.includes("child's teacher") ||
+        lower.includes("close and mutually respectful relationship") ||
+        lower.includes("teacher pays attention to my suggestions")
+    );
+
+    const isParentStress = (
+        lower.includes("q11.") && lower.includes("last month") ||
+        lower.includes("unable to control important aspects of my child's safety") ||
+        lower.includes("nervous or stressed about not being able to communicate")
     );
 
     const isPerceptionsOfSchool = (
@@ -256,16 +447,28 @@ function getSectionForColumn(column) {
         lower.includes("please indicate the level of stress you experience")
     );
 
-    // School Characteristics only for admin surveys (Q12b, Q13)
-    const isSchoolCharacteristics = (
-        (lower.includes("q12b") || lower.includes("please provide any other pertinent details about this school")) ||
-        (lower.includes("q13") && lower.includes("how many students are currently enrolled at this school"))
+    // School Metrics only for admin surveys (Q15-Q22)
+    const isSchoolMetrics = (
+        (lower.includes("q15") && lower.includes("average gpa")) ||
+        (lower.includes("q16") && lower.includes("standardized test score")) ||
+        (lower.includes("q17") && lower.includes("average daily attendance")) ||
+        (lower.includes("q18") && lower.includes("suspension rate")) ||
+        (lower.includes("q19") && lower.includes("bullying incidents")) ||
+        (lower.includes("q20") && lower.includes("cyberbullying")) ||
+        (lower.includes("q21") && lower.includes("fights")) ||
+        (lower.includes("q22") && lower.includes("mental health referrals"))
     );
 
     if (isPolicyStress) return "Please indicate the level of stress you experience from each of the following aspects of your school's phone policy:";
     if (isPerceptionsOfSchool) return "School Experience";
-    if (isSchoolCharacteristics) return "School Characteristics";
+    if (isSchoolMetrics) return "School Metrics";
     if (isDemographics) return "Demographics";
+    if (isParentStress) return "Parental Stress & Concerns";
+    if (isParentTeacherRelationship) return "Parent-Teacher Relationship";
+    if (isParentChildBehavior) return "Child Behaviors";
+    if (isTeacherStress) return "Teacher Stress & Burnout";
+    if (isTeacherExperience) return "Teacher Experience & Support";
+    if (isTeacherSchoolClimate) return "School Climate & Student Outcomes";
     if (isStudentBehaviors) return "Student Behaviors";
     if (isPerceptions) return "School Phone Policy";
     if (isAcademic) return "Academic Outcomes";
@@ -400,7 +603,6 @@ function displayResults(data) {
     // --- Stats Section ---
     let html = `<h2>${surveyType.charAt(0).toUpperCase() + surveyType.slice(1)} Data Results</h2>`;
     html += `<div class="stat-item"><strong>Number of Respondents:</strong> ${data.num_rows}</div>`;
-    html += `<div class="stat-item"><strong>Number of Variables:</strong> ${data.num_columns}</div>`;
     
     if (data.summary_stats && Object.keys(data.summary_stats).length > 0) {
         html += '<h3>Numerical Summary Statistics</h3>';
@@ -520,17 +722,13 @@ function displayResults(data) {
             chartData = normalizeCategoryNames(chartData);
 
             const chartId = `chart-${column.replace(/[^a-zA-Z0-9]/g, '_')}`;
-            // For admin surveys, make "School Experience" section horizontal
-            const isSchoolExperienceAdmin = (surveyType === 'admin' && sectionTitle === 'School Experience');
-            const isRotated = isSchoolExperienceAdmin || column.includes("restrictive") || chartData.length > 6 || chartData.some(d => d.category.length > 15);
 
             if (currentSection && sectionsData[currentSection]) {
                 sectionsData[currentSection].charts.push({
                     chartId,
                     displayColumn,
                     chartData,
-                    column,
-                    isRotated
+                    column
                 });
             }
 
@@ -620,7 +818,7 @@ function displayResults(data) {
             // Now render all D3 charts
             for (const [sectionTitle, sectionData] of Object.entries(sectionsData)) {
                 for (const chart of sectionData.charts) {
-                    renderD3BarChart(`#${chart.chartId}`, chart.chartData, chart.column, chart.isRotated);
+                    renderD3BarChart(`#${chart.chartId}`, chart.chartData, chart.column);
                 }
             }
         }
@@ -660,36 +858,39 @@ function showError(message) {
     errorDiv.style.display = 'block';
 }
 
-function renderD3BarChart(containerSelector, data, column, isRotated) {
-    const margin = {top: 20, right: 30, bottom: isRotated ? 100 : 70, left: isRotated ? 400 : 80};
+function renderD3BarChart(containerSelector, data, column) {
+    // Always use vertical bars: categories on x-axis, frequencies on y-axis
+    const margin = {top: 20, right: 30, bottom: 180, left: 80};
     // Make width responsive to label count; ensure minimum width
-    const baseWidth = Math.max(1000, data.length * (isRotated ? 40 : 120));
+    const baseWidth = Math.max(1000, data.length * 120);
     const width = baseWidth - margin.left - margin.right;
-    const height = 420 - margin.top - margin.bottom;
+    const height = 500 - margin.top - margin.bottom;
 
-    // Helper function to wrap text
-    function wrap(text, width) {
+    // Helper function to wrap text - splits on whitespace and also handles explicit newlines
+    function wrapLabels(text, width) {
         text.each(function() {
             const text = d3.select(this);
-            const words = text.text().split(/\s+/).reverse();
-            let word;
+            const fullText = text.text();
+            const words = fullText.split(/\s+/);
             let line = [];
             let lineNumber = 0;
             const lineHeight = 1.1; // ems
             const y = text.attr("y");
             const dy = parseFloat(text.attr("dy") || 0);
-            let tspan = text.text(null).append("tspan").attr("x", -10).attr("y", y).attr("dy", dy + "em");
             
-            while (word = words.pop()) {
+            text.text(null);
+            let tspan = text.append("tspan").attr("x", 0).attr("y", y).attr("dy", dy + "em");
+            
+            words.forEach((word, i) => {
                 line.push(word);
                 tspan.text(line.join(" "));
                 if (tspan.node().getComputedTextLength() > width) {
                     line.pop();
                     tspan.text(line.join(" "));
                     line = [word];
-                    tspan = text.append("tspan").attr("x", -10).attr("y", y).attr("dy", ++lineNumber * lineHeight + dy + "em").text(word);
+                    tspan = text.append("tspan").attr("x", 0).attr("y", y).attr("dy", ++lineNumber * lineHeight + dy + "em").text(word);
                 }
-            }
+            });
         });
     }
 
@@ -703,58 +904,50 @@ function renderD3BarChart(containerSelector, data, column, isRotated) {
 
     const maxCount = d3.max(data, d => d.count);
     
-    if (isRotated) {
-        // Horizontal Bars
-        const x = d3.scaleLinear().domain([0, Math.max(maxCount, 1)]).range([0, width]);
-        const xAxis = d3.axisBottom(x).tickFormat(d3.format("d"));
-        // For small counts, use exact integer ticks
-        if (maxCount <= 10) {
-            xAxis.tickValues(d3.range(0, maxCount + 1));
-        }
-        svg.append("g").attr("transform", `translate(0,${height})`).call(xAxis);
+    // Vertical Bars: Categories on X-axis, Frequencies on Y-axis
+    const x = d3.scaleBand().range([ 0, width ]).domain(data.map(d => d.category)).padding(0.2);
+    svg.append("g").attr("transform", `translate(0,${height})`)
+        .call(d3.axisBottom(x))
+        .selectAll("text")
+        .attr("transform", "translate(-10,0)rotate(-45)")
+        .style("text-anchor", "end")
+        .style("font-size", "14px")
+        .call(wrapLabels, 80); // Wrap labels to fit in bottom margin
 
-        const y = d3.scaleBand().range([height, 0]).domain(data.map(d => d.category)).padding(0.1);
-        svg.append("g").call(d3.axisLeft(y))
-            .selectAll(".tick text")
-            .call(wrap, margin.left - 20); // Wrap text to fit in left margin
-
-        svg.selectAll(".bar").data(data).join("rect")
-            .attr("class", "bar")
-            .attr("x", x(0))
-            .attr("y", d => y(d.category))
-            .attr("height", y.bandwidth())
-            .attr("width", d => x(d.count));
-
-        svg.selectAll(".text").data(data).enter().append("text")
-          .attr("x", d => x(d.count) + 5)
-          .attr("y", d => y(d.category) + y.bandwidth() / 2 + 5)
-          .text(d => d.count);
-    } else {
-        // Vertical Bars
-        const x = d3.scaleBand().range([ 0, width ]).domain(data.map(d => d.category)).padding(0.2);
-        svg.append("g").attr("transform", `translate(0,${height})`)
-            .call(d3.axisBottom(x))
-            .selectAll("text").attr("transform", "translate(-10,0)rotate(-45)").style("text-anchor", "end").style("font-size", "14px");
-
-        const y = d3.scaleLinear().domain([0, Math.max(maxCount, 1)]).range([ height, 0]);
-        const yAxis = d3.axisLeft(y).tickFormat(d3.format("d")).tickSizeOuter(0);
-        // For small counts, use exact integer ticks
-        if (maxCount <= 10) {
-            yAxis.tickValues(d3.range(0, maxCount + 1));
-        }
-        svg.append("g").call(yAxis);
-
-        svg.selectAll(".bar").data(data).join("rect")
-            .attr("class", "bar")
-            .attr("x", d => x(d.category))
-            .attr("width", x.bandwidth())
-            .attr("y", d => y(d.count))
-            .attr("height", d => height - y(d.count));
-        
-        svg.selectAll(".text").data(data).enter().append("text")
-          .attr("x", d => x(d.category) + x.bandwidth() / 2)
-          .attr("y", d => y(d.count) - 5)
-          .attr("text-anchor", "middle")
-          .text(d => d.count);
+    const y = d3.scaleLinear().domain([0, Math.max(maxCount, 1)]).range([ height, 0]);
+    const yAxis = d3.axisLeft(y).tickFormat(d3.format("d")).tickSizeOuter(0);
+    // For small counts, use exact integer ticks
+    if (maxCount <= 10) {
+        yAxis.tickValues(d3.range(0, maxCount + 1));
     }
+    svg.append("g").call(yAxis);
+
+    // Add axis labels
+    svg.append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 0 - margin.left)
+        .attr("x", 0 - (height / 2))
+        .attr("dy", "1em")
+        .style("text-anchor", "middle")
+        .text("Number of responses");
+
+    // Calculate total for percentage
+    const totalCount = d3.sum(data, d => d.count);
+
+    svg.selectAll(".bar").data(data).join("rect")
+        .attr("class", "bar")
+        .attr("x", d => x(d.category))
+        .attr("width", x.bandwidth())
+        .attr("y", d => y(d.count))
+        .attr("height", d => height - y(d.count));
+    
+    svg.selectAll(".text").data(data).enter().append("text")
+      .attr("x", d => x(d.category) + x.bandwidth() / 2)
+      .attr("y", d => y(d.count) - 5)
+      .attr("text-anchor", "middle")
+      .style("font-size", "14px")
+      .text(d => {
+        const percentage = ((d.count / totalCount) * 100).toFixed(1);
+        return percentage + "%";
+      });
 }
