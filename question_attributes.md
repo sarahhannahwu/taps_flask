@@ -26,6 +26,7 @@ If the question is categorical, need to identify ordering type:
 - FREQUENCY_ORDER: "Always," "Often"..."Never"
 - RESTRICTIVENESS_ORDER: "The policy should be much more restrictive", "The policy should be a little more restrictive"...
 - INTENSITY_ORDER: "Not at all" to "Extremely"
+- QUALITY_ORDER: "Very bad" to "Very good"
 - GENDER_ORDER: "Male", "Female", "Non-binary", "Prefer to self-describe", "I prefer not to answer
 - NO_YES: "No", "Yes"
 

@@ -2,10 +2,28 @@
 import pandas as pd
 import numpy as np
 import re
+import json
+import io
+import csv
 from collections import OrderedDict
 
 # Order definitions - source of truth for response option ordering
 ORDER_DEFINITIONS = {
+    "NO_YES": [
+        "No",
+        "Yes"
+    ],
+    "PHONE_USE_ORDER": [
+        "Less than 1 hour",
+        "1 hour to less than 2",
+        "2 hours to less than 3",
+        "3 hours to less than 4",
+        "4 hours to less than 5",
+        "5 hours to less than 6",
+        "6 hours to less than 7",
+        "7 hours to less than 8",
+        "More than 8 hours"
+    ],
     "AGREEMENT_ORDER": [
         "Strongly agree",
         "Somewhat agree",
@@ -50,6 +68,18 @@ ORDER_DEFINITIONS = {
         "Slightly",
         "Not at all"
     ],
+    "UPSET_ORDER": [
+        "Very upsetting",
+        "A bit upsetting",
+        "Not upsetting",
+        "Does not apply to me (N/A)"
+    ],
+    "LUNCH_ORDER": [
+        "All of it",
+        "Most of it",
+        "Some of it",
+        "None of it",
+    ],
     "GENDER_ORDER": [
         "Male",
         "Female",
@@ -61,7 +91,7 @@ ORDER_DEFINITIONS = {
     "PERCENTAGE_ORDER": "numeric"  # Special marker for numeric percentage sorting
 }
 
-def apply_response_ordering(col, response_dict):
+def apply_response_ordering(col, response_dict, question_attrs=None):
     """
     Applies the appropriate ordering to response options based on column content.
     Returns ordered list of categories or original dict if no match.
@@ -78,25 +108,41 @@ def apply_response_ordering(col, response_dict):
     if has_percentage:
         return sort_percentage_responses(response_dict)
     
-    # Determine which order to apply based on column content
-    if any(word in col_lower for word in ["agree", "satisfaction", "satisfied", "support", "care", "respect", "connected"]):
-        order = ORDER_DEFINITIONS["AGREEMENT_ORDER"]
-    elif any(word in col_lower for word in ["apply", "applies"]):
-        order = ORDER_DEFINITIONS["APPLY_ORDER"]
-    elif any(word in col_lower for word in ["often", "frequency", "how often", "occurs", "drains", "drained", "burned"]):
-        order = ORDER_DEFINITIONS["FREQUENCY_ORDER"]
-    elif any(word in col_lower for word in ["restrictive", "restrict"]):
-        order = ORDER_DEFINITIONS["RESTRICTIVENESS_ORDER"]
-    elif any(word in col_lower for word in ["important", "integration", "stress", "stressful"]):
-        order = ORDER_DEFINITIONS["INTENSITY_ORDER"]
-    elif any(word in col_lower for word in ["gender"]):
-        order = ORDER_DEFINITIONS["GENDER_ORDER"]
-    elif any(word in col_lower for word in ["grade"]):
-        # Grade sorting extracts numeric values from user-entered grades
-        return sort_grade_responses(response_dict)
-    else:
-        # No matching order, sort by frequency (descending) as default
-        return sort_by_frequency(response_dict)
+    # If question attributes provided, prefer them (explicit ordering key)
+    order = None
+    if question_attrs:
+        # question_attrs may specify a response ordering key that matches ORDER_DEFINITIONS
+        resp_order_key = question_attrs.get("response_ordering") if isinstance(question_attrs, dict) else None
+        if resp_order_key:
+            # If ordering is a special numeric marker
+            if resp_order_key in ("GRADE_ORDER", "PERCENTAGE_ORDER"):
+                if resp_order_key == "GRADE_ORDER":
+                    return sort_grade_responses(response_dict)
+                if resp_order_key == "PERCENTAGE_ORDER":
+                    return sort_percentage_responses(response_dict)
+            # Otherwise try to fetch an order definition
+            order = ORDER_DEFINITIONS.get(resp_order_key)
+
+    # If no explicit attribute ordering, fall back to legacy heuristic matching
+    if order is None:
+        if any(word in col_lower for word in ["agree", "satisfaction", "satisfied", "support", "care", "respect", "connected"]):
+            order = ORDER_DEFINITIONS["AGREEMENT_ORDER"]
+        elif any(word in col_lower for word in ["apply", "applies"]):
+            order = ORDER_DEFINITIONS["APPLY_ORDER"]
+        elif any(word in col_lower for word in ["often", "frequency", "how often", "occurs", "drains", "drained", "burned"]):
+            order = ORDER_DEFINITIONS["FREQUENCY_ORDER"]
+        elif any(word in col_lower for word in ["restrictive", "restrict"]):
+            order = ORDER_DEFINITIONS["RESTRICTIVENESS_ORDER"]
+        elif any(word in col_lower for word in ["important", "integration", "stress", "stressful"]):
+            order = ORDER_DEFINITIONS["INTENSITY_ORDER"]
+        elif any(word in col_lower for word in ["gender"]):
+            order = ORDER_DEFINITIONS["GENDER_ORDER"]
+        elif any(word in col_lower for word in ["grade"]):
+            # Grade sorting extracts numeric values from user-entered grades
+            return sort_grade_responses(response_dict)
+        else:
+            # No matching order, sort by frequency (descending) as default
+            return sort_by_frequency(response_dict)
     
     # Apply ordering with partial matching for INTENSITY_ORDER
     if order == ORDER_DEFINITIONS["INTENSITY_ORDER"]:
@@ -248,7 +294,114 @@ def detect_survey_type(df):
     # Default fallback
     return 'student'
 
-def process_taps_data(file_stream):
+
+def load_question_attributes(source):
+    """
+    Load question attributes from a file path or file-like object.
+    Supports JSON (dict or list of records) or CSV with columns like: id,text,data_type,display_type,response_ordering
+    Returns a mapping of keys (lowered question text and id when available) to attribute dicts.
+    """
+    if not source:
+        return {}
+
+    # Read text from path or file-like
+    text = None
+    if hasattr(source, 'read'):
+        try:
+            text = source.read()
+        except Exception:
+            # If reading fails, try to access .name and open
+            if hasattr(source, 'name'):
+                with open(source.name, 'r', encoding='utf-8') as f:
+                    text = f.read()
+    else:
+        # treat as path
+        try:
+            with open(source, 'r', encoding='utf-8') as f:
+                text = f.read()
+        except Exception:
+            return {}
+
+    if text is None:
+        return {}
+
+    # Try JSON
+    try:
+        parsed = json.loads(text)
+        attrs = {}
+        if isinstance(parsed, dict):
+            # assume mapping from question text or id to attr dict
+            for k, v in parsed.items():
+                if isinstance(k, str):
+                    attrs[k.lower().strip()] = v
+        elif isinstance(parsed, list):
+            # list of records
+            for rec in parsed:
+                if not isinstance(rec, dict):
+                    continue
+                # prefer 'text' as key, fall back to 'id'
+                key = rec.get('text') or rec.get('id')
+                if key:
+                    attrs[str(key).lower().strip()] = rec
+        return attrs
+    except Exception:
+        pass
+
+    # Try CSV
+    try:
+        attrs = {}
+        reader = csv.DictReader(io.StringIO(text))
+        for row in reader:
+            # accept multiple possible key column names
+            key = row.get('text') or row.get('question_text') or row.get('question') or row.get('id') or row.get('unique_id')
+            if not key:
+                continue
+            # clean up row: strip empty values
+            clean_row = {k: (v if v != '' else None) for k, v in row.items()}
+            text_key = str(clean_row.get('question_text') or clean_row.get('text') or key).lower().strip()
+            id_key = str(clean_row.get('unique_id') or clean_row.get('id') or key).lower().strip()
+            # store by both text and id when available
+            attrs[text_key] = clean_row
+            attrs[id_key] = clean_row
+        return attrs
+    except Exception:
+        return {}
+
+
+def find_question_attr_for_column(col, attrs_map):
+    """Return attribute dict for a column by exact or substring matching against attrs_map keys."""
+    if not attrs_map:
+        return None
+    col_key = str(col).lower().strip()
+    # Normalize function: remove non-alphanumeric for safer id matching
+    def normalize(s):
+        return re.sub(r'[^a-z0-9]', '', s.lower()) if s else ''
+
+    norm_col = normalize(col_key)
+
+    # 1) Exact key match
+    if col_key in attrs_map:
+        return attrs_map[col_key]
+
+    # 2) Normalized exact match (handles 'Q3' vs 'q3', punctuation)
+    for k, v in attrs_map.items():
+        if normalize(k) and normalize(k) == norm_col:
+            return v
+
+    # 3) Safe substring matching for longer keys (prefer question text matches)
+    for k, v in attrs_map.items():
+        # only consider textual keys longer than a small threshold to avoid id substring collisions
+        if len(k) >= 8 and k in col_key:
+            return v
+
+    # 4) As a last resort, match if column contains a significant portion of the key
+    for k, v in attrs_map.items():
+        if len(k) >= 8 and col_key in k:
+            return v
+
+    return None
+
+def process_taps_data(file_stream, question_attributes=None):
     """
     Reads the CSV, cleans it, and returns a dictionary with:
       - num_rows
@@ -262,6 +415,12 @@ def process_taps_data(file_stream):
     except Exception as e:
         raise ValueError(f"Could not read CSV file: {e}")
     
+    # Load question attributes (if provided)
+    if isinstance(question_attributes, dict):
+        attrs_map = {k.lower().strip(): v for k, v in question_attributes.items()}
+    else:
+        attrs_map = load_question_attributes(question_attributes)
+
     # Detect survey type
     survey_type = detect_survey_type(df)
 
@@ -422,8 +581,11 @@ def process_taps_data(file_stream):
         for category in counts.index:
             response_dict[category] = int(counts[category])
         
-        # Apply ordering to response options
-        response_dict = apply_response_ordering(col, response_dict)
+        # Determine if we have attributes for this question/column
+        q_attrs = find_question_attr_for_column(col, attrs_map)
+
+        # Apply ordering to response options (prefer explicit attrs when available)
+        response_dict = apply_response_ordering(col, response_dict, question_attrs=q_attrs)
         
         # Convert to list format to preserve order through JSON serialization
         # Format: [{"category": "0%", "count": 5}, {"category": "10%", "count": 3}, ...]
@@ -437,5 +599,6 @@ def process_taps_data(file_stream):
         "survey_type": survey_type,
         "responses": responses,
         "summary_stats": summary_stats,
-        "order_definitions": ORDER_DEFINITIONS
+        "order_definitions": ORDER_DEFINITIONS,
+        "question_attributes": attrs_map
     }
