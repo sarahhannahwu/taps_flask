@@ -1,0 +1,168 @@
+unique_id,question_text,respondent,survey_section,display_type,type_of_response,response_ordering
+Q1,Do you have a cell phone?,Student ,Tech Usage ,Histogram,Categorical,NO_YES
+Q2,Is it a smartphone with apps and access to the internet?,Student ,Tech Usage ,Histogram,Categorical,NO_YES
+Q3 ,Do you feel you can contact your parent(s) in a timely manner when you need to during the school day?,Student ,Tech Usage ,Histogram,Categorical,NO_YES
+Q4a,Do you bring a phone to school?,Student ,Tech Usage ,Histogram,Categorical,NO_YES
+Q4a.1,"If you bring a phone to school, do you use it for school purposes, like classwork?",Student ,Tech Usage ,Histogram,Categorical,NO_YES
+Q4a.2,"If you bring a phone to school, do you use it for personal reasons, like social media or talking to friends?",Student ,Tech Usage ,Histogram,Categorical,NO_YES
+Q4b,Do you bring a tablet to school?,Student ,Tech Usage ,Histogram,Categorical,NO_YES
+Q4b.1,"If you bring a tablet to school, do you use it for school purposes, like classwork?",Student ,Tech Usage ,Histogram,Categorical,NO_YES
+Q4b.2,"If you bring a tablet to school, do you use it for personal reasons, like social media or talking to friends?",Student ,Tech Usage ,Histogram,Categorical,NO_YES
+Q4c,Do you bring a laptop to school?,Student ,Tech Usage ,Histogram,Categorical,NO_YES
+Q4c.1,"If you bring a laptop to school, do you use it for school purposes, like classwork?",Student ,Tech Usage ,Histogram,Categorical,NO_YES
+Q4c.2,"If you bring a laptop to school, do you use it for personal reasons, like social media or talking to friends?",Student ,Tech Usage ,Histogram,Categorical,NO_YES
+Q4d,Do you bring a smartwatch to school?,Student ,Tech Usage ,Histogram,Categorical,NO_YES
+Q4d.1,"If you bring a smartwatch to school, do you use it for school purposes, like classwork?",Student ,Tech Usage ,Histogram,Categorical,NO_YES
+Q4d.2,"If you bring a smartwatch to school, do you use it for personal reasons, like social media or talking to friends?",Student ,Tech Usage ,Histogram,Categorical,NO_YES
+Q4e,Do you bring another device to school?,Student ,Tech Usage ,Histogram,Categorical,NO_YES
+Q4e.1,Other Device:,,Tech Usage ,Text box,Open-ended ,
+Q4e.2,"If you bring the device to school, do you use it for school purposes, like classwork?",Student ,Tech Usage ,Histogram,Categorical,NO_YES
+Q4e.3,"If you bring the device to school, do you use it for personal reasons, like social media or talking to friends?",Student ,Tech Usage ,Histogram,Categorical,NO_YES
+Q5,"On an average school day (from when you arrive at school to when you leave), how much time do you spend using your phone?  (in hours) ",Student ,Tech Usage ,Histogram,Categorical,PHONE_USE_ORDER
+Q6,"On a scale of 1-5, please rate your agreement with this statement: “I feel worried about missing out on things when I don’t have access to my phone.” (1 = Strongly disagree to 5 = Strongly agree)",Student ,Tech Usage ,Histogram,Categorical,AGREEMENT_ORDER
+Q7,Do you have a job?,Student ,Tech Usage ,Histogram,Categorical,NO_YES
+Q8,"If you have a job outside of school, around how many times does your boss/supervisor contact you through your mobile phone each week during the school day?
+
+Number of times per week:",Student ,Tech Usage ,Histogram,Categorical,AMOUNT 
+Q9,"During a single school day, around how many times do your parents contact you through your mobile phone? 
+
+Number of times per day:",Student ,Tech Usage ,Histogram,Categorical,AMOUNT 
+Q10,Does your school have a phone policy? ,Student ,School Phone Policy ,Histogram,Categorical,NO_YES
+Q11,"Under your school’s phone policy, when are students allowed to use their phones at school? Select all that apply.",Student ,School Phone Policy ,Histogram,Categorical,
+Q12,How does your school restrict access to phones?  Select all that apply.,Student ,School Phone Policy ,Histogram,Categorical,
+Q13,How satisfied are you with your school’s phone policy?,Student ,School Phone Policy ,Histogram,Categorical,PERCENT
+Q14,How consistently do teachers and staff enforce your school's phone policy? Give your best guess. ,Student ,School Phone Policy ,Histogram,Categorical,PERCENT 
+Q15,What percentage of your classmates are using their phone when they shouldn’t be? Give your best guess. ,Student ,School Phone Policy ,Histogram,Categorical,PERCENT 
+Q16,"In your opinion, should your school's phone policy be more or less restrictive than it is now?",Student ,School Phone Policy ,Histogram,Categorical,RESTRICTIVENESS_ORDER
+Q17,"In the following set of questions, we will ask about how you view your school experience.",,,,,
+Q17.1,"In general, I pay attention in class.",Student ,School Experience,Histogram,Categorical,AGREEMENT_ORDER
+Q17.2,I feel like this school is the right place for me.,Student ,School Experience,Histogram,Categorical,AGREEMENT_ORDER
+Q17.3,"In class, I often pretend to be working when I’m not.",Student ,School Experience,Histogram,Categorical,AGREEMENT_ORDER
+Q17.4,"In school, I do just enough to get by.",Student ,School Experience,Histogram,Categorical,AGREEMENT_ORDER
+Q17.5,I think the things I learn at school are useless.,Student ,School Experience,Histogram,Categorical,AGREEMENT_ORDER
+Q18,My school is a place where…,,,,,
+Q18.1,I feel like an outsider (or left out of things).,Student ,School Experience,Histogram,Categorical,AGREEMENT_ORDER
+Q18.2,I make friends easily.,Student ,School Experience,Histogram,Categorical,AGREEMENT_ORDER
+Q18.3,I feel like I belong.,Student ,School Experience,Histogram,Categorical,AGREEMENT_ORDER
+Q18.4,I feel awkward and out of place.,Student ,School Experience,Histogram,Categorical,AGREEMENT_ORDER
+Q18.5,Other students seem to like me.,Student ,School Experience,Histogram,Categorical,AGREEMENT_ORDER
+Q18.6,I often feel lonely.,Student ,School Experience,Histogram,Categorical,AGREEMENT_ORDER
+Q18.7,My teachers really try to help me.,Student ,School Experience,Histogram,Categorical,AGREEMENT_ORDER
+Q18.8,I get the emotional help and support I need from my school’s staff.,Student ,School Experience,Histogram,Categorical,AGREEMENT_ORDER
+Q18.9,My friends really try to help me.,Student ,School Experience,Histogram,Categorical,AGREEMENT_ORDER
+Q18.10,I can count on my friends when things go wrong.,Student ,School Experience,Histogram,Categorical,AGREEMENT_ORDER
+Q18.11,I can talk about my problems with my teachers.,Student ,School Experience,Histogram,Categorical,AGREEMENT_ORDER
+Q18.12,I have friends with whom I can share my joys and sorrows.,Student ,School Experience,Histogram,Categorical,AGREEMENT_ORDER
+Q18.13,My teachers are willing to help me make decisions.,Student ,School Experience,Histogram,Categorical,AGREEMENT_ORDER
+Q18.14,I can talk about my problems with my friends.,Student ,School Experience,Histogram,Categorical,AGREEMENT_ORDER
+Q19,"For each of the following statements, please select the option that best captures how you feel about your relationships with your friends at school. Think about each question carefully and be sure that you rate your friendships according to the way they are now, not according to how you want them to be.",,,,,
+Q19.1,My friends at school and I spend all our free time together.,Student ,School Experience,Histogram,Categorical,AGREEMENT_ORDER
+Q19.2,"Sometimes my friends at school and I just sit around and talk about things like school, sports, and things we like.",Student ,School Experience,Histogram,Categorical,AGREEMENT_ORDER
+Q19.3,I get into fights with my friends at school.,Student ,School Experience,Histogram,Categorical,AGREEMENT_ORDER
+Q19.4,"If I forgot my lunch or needed a little money, my friends at school would help me out.",Student ,School Experience,Histogram,Categorical,AGREEMENT_ORDER
+Q19.5,"If other kids were bothering me, my friends at school would help me.",Student ,School Experience,Histogram,Categorical,AGREEMENT_ORDER
+Q19.6,"If I have a problem at school or at home, I can talk to my friends about it.",Student ,School Experience,Histogram,Categorical,AGREEMENT_ORDER
+Q19.7,"If my friends had to move away, I would miss them.",Student ,School Experience,Histogram,Categorical,AGREEMENT_ORDER
+Q19.8,"When I do a good job at something, my friends at school are happy for me.",Student ,School Experience,Histogram,Categorical,AGREEMENT_ORDER
+Q20,How much of lunchtime do you spend talking with your friends in-person?,Student ,School Experience,Histogram,Categorical,LUNCH_ORDER
+Q21,Do you sometimes go to the bathroom just to use your phone?,Student ,School Experience,Histogram,Categorical,NO_YES
+Q22,"On school nights, how many hours of sleep do you usually get? (in hours)",Student ,Physical and Mental Health ,Histogram,Categorical,AMOUNT 
+Q23,"On a scale from 1-5, how would you rate the quality of your sleep? (1 = Very bad, 5 = Very good)",Student ,Physical and Mental Health ,Histogram,Categorical ,
+Q24,"In the past two weeks (14 days), on how many days have you slept poorly?",Student ,Physical and Mental Health ,Histogram,Categorical,AMOUNT 
+Q25,"During the past 7 days, on how many days were you physically active for a total of at least 60 minutes per day? (Add up all the time you spent in any kind of physical activity that increased your heart rate and made you breathe hard some of the time.)
+
+Number of days:",Student ,Physical and Mental Health ,Histogram,Categorical,AMOUNT 
+Q26,"During the past 12 months, on how many sports teams did you play? (Count any teams run by your school or community groups.)    
+
+Number of Teams:",Student ,Physical and Mental Health ,Histogram,Categorical ,
+Q27,"During the past 30 days, on how many days did you not go to school because you felt you would be unsafe at school?
+
+Number of Days:",Student ,Physical and Mental Health ,Histogram,Categorical,AMOUNT 
+Q28,"For each of the following statements, please select the option that best captures how you feel.",,,,,
+Q28.1,"Overall, I am happy with myself.",Student ,Physical and Mental Health ,Histogram,Categorical ,AGREEMENT_ORDER
+Q28.2,I have a positive attitude toward myself.,Student ,Physical and Mental Health ,Histogram,Categorical ,AGREEMENT_ORDER
+Q28.3,I can do a lot of things just as well as most other people.,Student ,Physical and Mental Health ,Histogram,Categorical ,AGREEMENT_ORDER
+Q28.4,In most ways my life is close to my ideal,Student ,Physical and Mental Health ,Histogram,Categorical ,AGREEMENT_ORDER
+Q28.5,I am satisfied with my life.,Student ,Physical and Mental Health ,Histogram,Categorical ,AGREEMENT_ORDER
+Q28.6,The conditions of my life are excellent.,Student ,Physical and Mental Health ,Histogram,Categorical ,AGREEMENT_ORDER
+Q29,Please rate your agreement with the following statements.,,,,,
+Q29.1,I feel that classmates are making fun of me.,Student ,Physical and Mental Health ,Histogram,Categorical ,AGREEMENT_ORDER
+Q29.2,I worry about what my classmates think of me.,Student ,Physical and Mental Health ,Histogram,Categorical ,AGREEMENT_ORDER
+Q29.3,I'm afraid that my classmates will not like me.,Student ,Physical and Mental Health ,Histogram,Categorical ,AGREEMENT_ORDER
+Q29.4,I feel that my classmates talk about me behind my back.,Student ,Physical and Mental Health ,Histogram,Categorical ,AGREEMENT_ORDER
+Q29.5,I feel shy around students I don't know.,Student ,Physical and Mental Health ,Histogram,Categorical ,AGREEMENT_ORDER
+Q29.6,I get nervous when I talk to new classmates.,Student ,Physical and Mental Health ,Histogram,Categorical ,AGREEMENT_ORDER
+Q29.7,I feel nervous when I'm around certain classmates.,Student ,Physical and Mental Health ,Histogram,Categorical ,AGREEMENT_ORDER
+Q29.8,It's hard for me to ask other classmates to play/hang out with me.,Student ,Physical and Mental Health ,Histogram,Categorical ,AGREEMENT_ORDER
+Q29.9,I feel shy even with classmates I know very well.,Student ,Physical and Mental Health ,Histogram,Categorical ,AGREEMENT_ORDER
+Q29.10,I'm afraid to invite my classmates to my house because they might say no.,Student ,Physical and Mental Health ,Histogram,Categorical ,AGREEMENT_ORDER
+Q30,"In the past four weeks, how often have you experienced the following?",,,,,
+Q30.1,I have no energy for things.,Student ,Physical and Mental Health ,Histogram,Categorical ,FREQUENCY_ORDER
+Q30.2,I feel sad or empty.,Student ,Physical and Mental Health ,Histogram,Categorical ,FREQUENCY_ORDER
+Q30.3,I feel worthless.,Student ,Physical and Mental Health ,Histogram,Categorical ,FREQUENCY_ORDER
+Q31,Please rate your agreement with the following statements.,,,,,
+Q31.1,I am often accused of lying or cheating.,Student ,Physical and Mental Health ,Histogram,Categorical ,AGREEMENT_ORDER
+Q31.2,I fight a lot.,Student ,Physical and Mental Health ,Histogram,Categorical ,AGREEMENT_ORDER
+Q31.3,I can make other people do what I want.,Student ,Physical and Mental Health ,Histogram,Categorical ,AGREEMENT_ORDER
+Q31.4,"I take things that are not mine from home, school or elsewhere.",Student ,Physical and Mental Health ,Histogram,Categorical ,AGREEMENT_ORDER
+Q31.5,"I am restless, I cannot stay still for long.",Student ,Physical and Mental Health ,Histogram,Categorical ,AGREEMENT_ORDER
+Q31.6,I am constantly fidgeting or squirming.,Student ,Physical and Mental Health ,Histogram,Categorical ,AGREEMENT_ORDER
+Q31.7,"I am easily distracted, I find it difficult to concentrate.",Student ,Physical and Mental Health ,Histogram,Categorical ,AGREEMENT_ORDER
+Q32a,"In recent weeks, how often have you experienced the following DURING school hours?",,,,,
+Q32a.1,Someone teased you or called you names.,Student ,Physical and Mental Health ,Histogram,Categorical ,FREQUENCY_ORDER
+Q32a.2,Someone deliberately left you out of things.,Student ,Physical and Mental Health ,Histogram,Categorical ,FREQUENCY_ORDER
+Q32a.3,Someone threatened you.,Student ,Physical and Mental Health ,Histogram,Categorical ,FREQUENCY_ORDER
+Q32a.4,Someone physically hurt you.,Student ,Physical and Mental Health ,Histogram,Categorical ,FREQUENCY_ORDER
+Q32a.5,A student told lies about you in texts or online to make others not like you.,Student ,Physical and Mental Health ,Histogram,Categorical ,FREQUENCY_ORDER
+Q32a.6,A student said online that they won’t like you unless you do what they want you to do.,Student ,Physical and Mental Health ,Histogram,Categorical ,FREQUENCY_ORDER
+Q32a.7,Another student tried to keep others from liking you by texting or posting mean things about you.,Student ,Physical and Mental Health ,Histogram,Categorical ,FREQUENCY_ORDER
+Q32b,How upsetting was it to be bullied in these ways DURING school hours?,,,,,
+Q32b.1,Someone teased you or called you names.,Student ,Physical and Mental Health ,Histogram,Categorical ,UPSET_ORDER
+Q32b.2,Someone deliberately left you out of things.,Student ,Physical and Mental Health ,Histogram,Categorical ,UPSET_ORDER
+Q32b.3,Someone threatened you.,Student ,Physical and Mental Health ,Histogram,Categorical ,UPSET_ORDER
+Q32b.4,Someone physically hurt you.,Student ,Physical and Mental Health ,Histogram,Categorical ,UPSET_ORDER
+Q32b.5,A student told lies about you in texts or online to make others not like you.,Student ,Physical and Mental Health ,Histogram,Categorical ,UPSET_ORDER
+Q32b.6,A student said online that they won’t like you unless you do what they want you to do.,Student ,Physical and Mental Health ,Histogram,Categorical ,UPSET_ORDER
+Q32b.7,Another student tried to keep others from liking you by texting or posting mean things about you.,Student ,Physical and Mental Health ,Histogram,Categorical ,UPSET_ORDER
+Q33a," In recent weeks, how often have you experienced the following OUTSIDE OF school hours?",,,,,
+Q33a.1,Someone teased you or called you names.,Student ,Physical and Mental Health ,Histogram,Categorical ,FREQUENCY_ORDER
+Q33a.2,Someone deliberately left you out of things.,Student ,Physical and Mental Health ,Histogram,Categorical ,FREQUENCY_ORDER
+Q33a.3,Someone threatened you.,Student ,Physical and Mental Health ,Histogram,Categorical ,FREQUENCY_ORDER
+Q33a.4,Someone physically hurt you.,Student ,Physical and Mental Health ,Histogram,Categorical ,FREQUENCY_ORDER
+Q33a.5,A student told lies about you in texts or online to make others not like you.,Student ,Physical and Mental Health ,Histogram,Categorical ,FREQUENCY_ORDER
+Q33a.6,A student said online that they won’t like you unless you do what they want you to do.,Student ,Physical and Mental Health ,Histogram,Categorical ,FREQUENCY_ORDER
+Q33a.7,Another student tried to keep others from liking you by texting or posting mean things about you.,Student ,Physical and Mental Health ,Histogram,Categorical ,FREQUENCY_ORDER
+Q33b,How upsetting was it to be bullied in these ways OUTSIDE OF school hours?,,,,,
+Q33b.1,Someone teased you or called you names.,Student ,Physical and Mental Health ,Histogram,Categorical ,UPSET_ORDER
+Q33b.2,Someone deliberately left you out of things.,Student ,Physical and Mental Health ,Histogram,Categorical ,UPSET_ORDER
+Q33b.3,Someone threatened you.,Student ,Physical and Mental Health ,Histogram,Categorical ,UPSET_ORDER
+Q33b.4,Someone physically hurt you.,Student ,Physical and Mental Health ,Histogram,Categorical ,UPSET_ORDER
+Q33b.5,A student told lies about you in texts or online to make others not like you.,Student ,Physical and Mental Health ,Histogram,Categorical ,UPSET_ORDER
+Q33b.6,A student said online that they won’t like you unless you do what they want you to do.,Student ,Physical and Mental Health ,Histogram,Categorical ,UPSET_ORDER
+Q33b.7,Another student tried to keep others from liking you by texting or posting mean things about you.,Student ,Physical and Mental Health ,Histogram,Categorical ,UPSET_ORDER
+Q34,Please share any other thoughts you have about your school's phone policy.,Student ,General Feedback ,Text box,Open-ended ,
+Q35,Is there anything else you want to share with us? ,Student ,General Feedback ,Text box,Open-ended ,
+Q36,What grade are you in?,Student ,Demographics,Histogram,Categorical ,GRADE_ORDER
+Q37,Are you an English Language Learner (ELL)?,Student ,Demographics,Histogram,Categorical ,NO_YES
+Q38,Do you have an Individualized Education Plan (IEP)? This is a plan or program for students with disabilities to receive special education. ,Student ,Demographics,Histogram,Categorical ,NO_YES
+Q39,What is your gender?,Student ,Demographics,Histogram,Categorical ,GENDER_ORDER
+Q40,With which racial/ethnic groups do you identify? You can select more than one.,Student ,Demographics,Histogram,Categorical ,
+Q1,"Overall, how would you say your school’s phone policy has changed your school?",Student ,Recommended Questions,Text box,Open-ended ,
+Q2,Please rate your agreement with the following statements about your behavior or feelings since the _____ [school to add] policy was introduced. “Since the new phone policy that was introduced in _______ [school to add] …,,,,,
+Q2.1 ,I have focused better in class.,Student ,Recommended Questions,Histogram,Categorical ,AGREEMENT_ORDER
+Q2.2,I have had fewer distractions.,Student ,Recommended Questions,Histogram,Categorical ,AGREEMENT_ORDER
+Q2.3,I have developed better social skills.,Student ,Recommended Questions,Histogram,Categorical ,AGREEMENT_ORDER
+Q2.4,I have felt closer to my friends.,Student ,Recommended Questions,Histogram,Categorical ,AGREEMENT_ORDER
+Q2.5,I have felt more left out or excluded.,Student ,Recommended Questions,Histogram,Categorical ,AGREEMENT_ORDER
+Q2.6,I have felt more anxious without my phone.,Student ,Recommended Questions,Histogram,Categorical ,AGREEMENT_ORDER
+Q2.7,I have talked to more people during lunch or breaks.,Student ,Recommended Questions,Histogram,Categorical ,AGREEMENT_ORDER
+Q2.8,I have felt less pressure to check my phone.,Student ,Recommended Questions,Histogram,Categorical ,AGREEMENT_ORDER
+Q2.9,I have gotten into trouble less often.,Student ,Recommended Questions,Histogram,Categorical ,AGREEMENT_ORDER
+Q2.10,I have been involved in less social drama at school.,Student ,Recommended Questions,Histogram,Categorical ,AGREEMENT_ORDER
+Q2.11,My grades have improved.,Student ,Recommended Questions,Histogram,Categorical ,AGREEMENT_ORDER
+Q2.12,I have been less likely to cheat.,Student ,Recommended Questions,Histogram,Categorical ,AGREEMENT_ORDER
+Q2.13,I have spent less time on my phone.,Student ,Recommended Questions,Histogram,Categorical ,AGREEMENT_ORDER
+Q2.14,I have been bullied more.,Student ,Recommended Questions,Histogram,Categorical ,AGREEMENT_ORDER
+Q2.15,I have felt less stressed.,Student ,Recommended Questions,Histogram,Categorical ,AGREEMENT_ORDER
+Q2.16,I have used my phone more before and after school.,Student ,Recommended Questions,Histogram,Categorical ,AGREEMENT_ORDER
+Q2.17,Nothing has really changed for me.,Student ,Recommended Questions,Histogram,Categorical ,AGREEMENT_ORDER
