@@ -7,17 +7,6 @@ RESPONSE_ORDERINGS = {
         "No",
         "Yes"
     ],
-    "PHONE_USE_ORDER": [
-        "Less than 1 hour",
-        "1 hour to less than 2",
-        "2 hours to less than 3",
-        "3 hours to less than 4",
-        "4 hours to less than 5",
-        "5 hours to less than 6",
-        "6 hours to less than 7",
-        "7 hours to less than 8",
-        "More than 8 hours"
-    ],
     "PHONE_WHEN_ORDER": [
         "During class",
         "At lunch time",
@@ -80,21 +69,6 @@ RESPONSE_ORDERINGS = {
         "Somewhat",
         "Slightly",
         "Not at all"
-    ],
-    "HRS_SLEEP_ORDER": [
-        "Less than 1 hour",
-        "1 hour to less than 2",
-        "2 hours to less than 3",
-        "3 hours to less than 4",
-        "4 hours to less than 5",
-        "5 hours to less than 6",
-        "6 hours to less than 7",
-        "7 hours to less than 8",
-        "8 hours to less than 9",
-        "9 hours to less than 10",
-        "10 hours to less than 11",
-        "11 hours to less than 12",
-        "12 or more hours"
     ],
     "DAYS_SLEPT_POORLY_ORDER": [
         "0",

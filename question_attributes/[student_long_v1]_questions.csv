@@ -1,5 +1,5 @@
 unique_id,question_text,respondent,survey_section,display_type,type_of_response,response_ordering
-Q0,This is the Student Long Survey (Version 1).,Student ,Intro,NULL,NULL,NULL
+Q0,This is the Student Long Survey [student_long_v1.0.0].,Student ,Intro,NULL,NULL,NULL
 Q1,Do you have a cell phone?,Student ,Tech Usage ,Histogram,Categorical,NO_YES
 Q2,Is it a smartphone with apps and access to the internet?,Student ,Tech Usage ,Histogram,Categorical,NO_YES
 Q3 ,Do you feel you can contact your parent(s) in a timely manner when you need to during the school day?,Student ,Tech Usage ,Histogram,Categorical,NO_YES
@@ -19,15 +19,11 @@ Q4e,Do you bring another device to school?,Student ,Tech Usage ,Histogram,Catego
 Q4e.1,Other Device:,,Tech Usage ,Text box,Open-ended ,
 Q4e.2,"If you bring the device to school, do you use it for school purposes, like classwork?",Student ,Tech Usage ,Histogram,Categorical,NO_YES
 Q4e.3,"If you bring the device to school, do you use it for personal reasons, like social media or talking to friends?",Student ,Tech Usage ,Histogram,Categorical,NO_YES
-Q5,"On an average school day (from when you arrive at school to when you leave), how much time do you spend using your phone?  (in hours) ",Student ,Tech Usage ,Histogram,Categorical,PHONE_USE_ORDER
+Q5,"On an average school day (from when you arrive at school to when you leave), how much time do you spend using your phone?  (in hours) ",Student ,Tech Usage ,Summary statistics,Numerical,NA
 Q6,Please rate your agreement with this statement: “I feel worried about missing out on things when I don’t have access to my phone.”,Student ,Tech Usage ,Histogram,Categorical,AGREEMENT_ORDER
 Q7,Do you have a job?,Student ,Tech Usage ,Histogram,Categorical,NO_YES
-Q8,"If you have a job outside of school, around how many times does your boss/supervisor contact you through your mobile phone each week during the school day?
-
-Number of times per week:",Student ,Tech Usage ,Histogram,Categorical,AMOUNT 
-Q9,"During a single school day, around how many times do your parents contact you through your mobile phone? 
-
-Number of times per day:",Student ,Tech Usage ,Histogram,Categorical,AMOUNT 
+Q8,"If you have a job outside of school, around how many times does your boss/supervisor contact you through your mobile phone each week during the school day? Number of times per week:",Student ,Tech Usage ,Histogram,Categorical,AMOUNT 
+Q9,"During a single school day, around how many times do your parents contact you through your mobile phone? Number of times per day:",Student ,Tech Usage ,Histogram,Categorical,AMOUNT 
 Q10,Does your school have a phone policy? ,Student ,School Phone Policy ,Histogram,Categorical,NO_YES
 Q11,"Under your school’s phone policy, when are students allowed to use their phones at school? Select all that apply.",Student ,School Phone Policy ,Histogram,Categorical,POLICY_WHEN_ORDER
 Q12,How does your school restrict access to phones?  Select all that apply.,Student ,School Phone Policy ,Histogram,Categorical,POLICY_WHERE_ORDER
@@ -67,18 +63,12 @@ Q19.7,"If my friends had to move away, I would miss them.",Student ,School Exper
 Q19.8,"When I do a good job at something, my friends at school are happy for me.",Student ,School Experience,Histogram,Categorical,AGREEMENT_ORDER
 Q20,How much of lunchtime do you spend talking with your friends in-person?,Student ,School Experience,Histogram,Categorical,LUNCH_ORDER
 Q21,Do you sometimes go to the bathroom just to use your phone?,Student ,School Experience,Histogram,Categorical,NO_YES
-Q22,"On school nights, how many hours of sleep do you usually get? (in hours)",Student ,Physical and Mental Health ,Histogram,Categorical,HRS_SLEEP_ORDER
+Q22,"On school nights, how many hours of sleep do you usually get? (in hours)",Student ,Physical and Mental Health ,Histogram,Categorical,NA
 Q23,How would you rate the quality of your sleep?,Student ,Physical and Mental Health ,Histogram,Categorical ,QUALITY_ORDER
 Q24,"In the past two weeks (14 days), on how many days have you slept poorly?",Student ,Physical and Mental Health ,Histogram,Categorical,DAYS_SLEPT_POORLY_ORDER
-Q25,"During the past 7 days, on how many days were you physically active for a total of at least 60 minutes per day? (Add up all the time you spent in any kind of physical activity that increased your heart rate and made you breathe hard some of the time.)
-
-Number of days:",Student ,Physical and Mental Health ,Histogram,Categorical,numeric
-Q26,"During the past 12 months, on how many sports teams did you play? (Count any teams run by your school or community groups.)    
-
-Number of Teams:",Student ,Physical and Mental Health ,Histogram,Categorical ,numeric
-Q27,"During the past 30 days, on how many days did you not go to school because you felt you would be unsafe at school?
-
-Number of Days:",Student ,Physical and Mental Health ,Histogram,Categorical,SCHOOL_UNSAFE_ORDER
+Q25,"During the past 7 days, on how many days were you physically active for a total of at least 60 minutes per day? (Add up all the time you spent in any kind of physical activity that increased your heart rate and made you breathe hard some of the time.) Number of days:",Student ,Physical and Mental Health ,Histogram,Categorical,NA
+Q26,"During the past 12 months, on how many sports teams did you play? (Count any teams run by your school or community groups.) Number of Teams:",Student ,Physical and Mental Health ,Histogram,Categorical ,NA
+Q27,"During the past 30 days, on how many days did you not go to school because you felt you would be unsafe at school? Number of Days:",Student ,Physical and Mental Health ,Histogram,Categorical,SCHOOL_UNSAFE_ORDER
 Q28,"For each of the following statements, please select the option that best captures how you feel.",,,,,
 Q28.1,"Overall, I am happy with myself.",Student ,Physical and Mental Health ,Histogram,Categorical ,AGREEMENT_ORDER
 Q28.2,I have a positive attitude toward myself.,Student ,Physical and Mental Health ,Histogram,Categorical ,AGREEMENT_ORDER
