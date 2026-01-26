@@ -144,6 +144,21 @@ RESPONSE_ORDERINGS = {
         "12",
         "I prefer not to answer"
     ],
+    "LEVEL_TAUGHT_ORDER": [
+        "Remedial",
+        "Regular",
+        "Honors",
+        "Advanced Placement (AP), International Baccalaureate (IB), or Dual Credit",
+    ],
+    "AREAS_TAUGHT_ORDER": [
+        "English Language Arts (ELA)",
+        "Math",
+        "Science",
+        "Social Studies",
+        "Connections / Specials (e.g., Art, PE, Band, Music)",
+        "Special Education",
+        "I prefer not to answer"
+    ],
     # Numeric orderings
     "AMOUNT": [
         "0-1",

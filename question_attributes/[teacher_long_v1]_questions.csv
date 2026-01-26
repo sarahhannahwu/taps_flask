@@ -1,0 +1,105 @@
+unique_id,question_text,respondent,survey_section,display_type,type_of_response,response_ordering
+Q1,"Currently, do you allow personal devices in your classroom to be used by students for educational purposes on a daily basis?",Teacher,Classroom Tech Policy,Histogram,Categorical,NO_YES
+Q2,"How important is the integration of technology to your everyday teaching practices? (e.g., showing a YouTube video as an example, Google Classroom, Kahoot, etc.)",Teacher,Classroom Tech Policy,Histogram,Categorical,INTENSITY_ORDER
+Q3,Does your school have a phone policy?,Teacher,Classroom Tech Policy,Histogram,Categorical,NO_YES
+Q4,"Under your school’s phone policy, when are students allowed to use their phones at school? Select all that apply.",Teacher,School Phone Policy,Histogram,Categorical,PHONE_WHEN_ORDER
+Q5,How does your school currently restrict access to phones?,Teacher,School Phone Policy,Histogram,Categorical,PHONE_WHERE_ORDER
+Q6,"Overall, how satisfied are you with your school's phone policy? ",Teacher,School Phone Policy,Histogram,Categorical,PERCENTAGE
+Q7,How consistently do teachers and staff enforce your school's phone policy? Give your best guess.,Teacher,School Phone Policy,Histogram,Categorical,PERCENTAGE
+Q8,What percentage of your students are using their phone when they shouldn’t be? Give your best guess.,Teacher,School Phone Policy,Histogram,Categorical,PERCENTAGE
+Q9,"In your opinion, should your school's phone policy be more or less restrictive than it is now?",Teacher,School Phone Policy,Histogram,Categorical,RESTRICTIVENESS_ORDER
+Q10,What challenges have you faced with implementing and/or enforcing the phone policy?,Teacher,School Phone Policy,Text box,Open-ended,
+Q11,Do you have any suggestions for overcoming those barriers?,Teacher,School Phone Policy,Text box,Open-ended,
+Q12,Please rate the extent to which you agree that the following statements apply to your students.  A significant number of my students…,,,,,
+Q12a,Seem interested in school,Teacher,School Experience,Histogram,Categorical,AGREEMENT_ORDER
+Q12b,Maintain positive and respectful relationships with each other,Teacher,School Experience,Histogram,Categorical,AGREEMENT_ORDER
+Q12c,Seem to care about grades,Teacher,School Experience,Histogram,Categorical,AGREEMENT_ORDER
+Q12d,Have good attendance,Teacher,School Experience,Histogram,Categorical,AGREEMENT_ORDER
+Q12e,Participate in class discussions/activities,Teacher,School Experience,Histogram,Categorical,AGREEMENT_ORDER
+Q12f,Need external disciplinary policies to behave,Teacher,School Experience,Histogram,Categorical,AGREEMENT_ORDER
+Q12g, Are respectful to staff,Teacher,School Experience,Histogram,Categorical,AGREEMENT_ORDER
+Q12h,Persist when tasks are challenging,Teacher,School Experience,Histogram,Categorical,AGREEMENT_ORDER
+Q12i,Demonstrate appropriate effort for task,Teacher,School Experience,Histogram,Categorical,AGREEMENT_ORDER
+Q12j,Are self-motivated,Teacher,School Experience,Histogram,Categorical,AGREEMENT_ORDER
+Q13,Please rate the extent to which the following statements apply to your relationship with your students in general.,,,,,
+Q13a,I share warm relationships with my students.,Teacher,School Experience,Histogram,Categorical,APPLY_ORDER
+Q13b,My students and I always seem to be struggling with each other.,Teacher,School Experience,Histogram,Categorical,APPLY_ORDER
+Q13c,Dealing with my students drains my energy.,Teacher,School Experience,Histogram,Categorical,APPLY_ORDER
+Q13d,My students' feelings toward me can be unpredictable or can change suddenly.,Teacher,School Experience,Histogram,Categorical,APPLY_ORDER
+Q13e,My interactions with my students make me feel effective and confident.,Teacher,School Experience,Histogram,Categorical,APPLY_ORDER
+Q13f,My students seem to feel secure with me.,Teacher,School Experience,Histogram,Categorical,APPLY_ORDER
+Q14 ,Please indicate how often these behaviors occur from a significant number of your students.,,,,,
+Q14a,Have difficulty staying on task,Teacher,School Experience,Histogram,Categorical,FREQUENCY_ORDER
+Q14b,Yell or scream,Teacher,School Experience,Histogram,Categorical,FREQUENCY_ORDER
+Q14c,Are easily distracted,Teacher,School Experience,Histogram,Categorical,FREQUENCY_ORDER
+Q14d,Fail to finish tasks or projects,Teacher,School Experience,Histogram,Categorical,FREQUENCY_ORDER
+Q14e,Act defiant when told to do something,Teacher,School Experience,Histogram,Categorical,FREQUENCY_ORDER
+Q15,Please read each statement and mark the response that best shows how much you agree. In this school…,,,,,
+Q15a,Adults who work in this school care about the students.,Teacher,School Experience,Histogram,Categorical,AGREEMENT_ORDER
+Q15b,Teachers care about their students.,Teacher,School Experience,Histogram,Categorical,AGREEMENT_ORDER
+Q15c,Students are friendly with each other.,Teacher,School Experience,Histogram,Categorical,AGREEMENT_ORDER
+Q15d,Students care about each other.,Teacher,School Experience,Histogram,Categorical,AGREEMENT_ORDER
+Q15e,Teachers show respect towards parents.,Teacher,School Experience,Histogram,Categorical,AGREEMENT_ORDER
+Q15f,Teachers listen to the concerns of parents.,Teacher,School Experience,Histogram,Categorical,AGREEMENT_ORDER
+Q15g,Students feel safe.,Teacher,School Experience,Histogram,Categorical,AGREEMENT_ORDER
+Q15h,The school rules are fair.,Teacher,School Experience,Histogram,Categorical,AGREEMENT_ORDER
+Q15i,This school makes it clear how students are expected to act.,Teacher,School Experience,Histogram,Categorical,AGREEMENT_ORDER
+Q15j,Students know how they are expected to act.,Teacher,School Experience,Histogram,Categorical,AGREEMENT_ORDER
+Q16,Please indicate how strongly you agree or disagree with the following statements about your experience as a teacher at this school.,,,,,
+Q16a,I am satisfied with my co-workers’ competence.,Teacher,School Experience,Histogram,Categorical,AGREEMENT_ORDER
+Q16b,I am satisfied with the behavior among my students.,Teacher,School Experience,Histogram,Categorical,AGREEMENT_ORDER
+Q16c,I am satisfied with my parent interactions at my school.,Teacher,School Experience,Histogram,Categorical,AGREEMENT_ORDER
+Q16d,I feel supported by my school’s  administration with respect to our phone policy.,Teacher,School Experience,Histogram,Categorical,AGREEMENT_ORDER
+Q16e,I enjoy teaching.,Teacher,School Experience,Histogram,Categorical,AGREEMENT_ORDER
+Q16f,I get frustrated during my time teaching in the classroom.,Teacher,School Experience,Histogram,Categorical,AGREEMENT_ORDER
+Q16g,Teaching often drains my energy.,Teacher,School Experience,Histogram,Categorical,AGREEMENT_ORDER
+Q17,Please rate the extent to which you agree with the following statements about your relationships with the administration at your school.,,,,,
+Q17a,I feel supported by the administration at my school.,Teacher,School Experience,Histogram,Categorical,AGREEMENT_ORDER
+Q17b,I get along well with the administration at my school.,Teacher,School Experience,Histogram,Categorical,AGREEMENT_ORDER
+Q17c,I feel connected to the administration at my school.,Teacher,School Experience,Histogram,Categorical,AGREEMENT_ORDER
+Q18 ,The following statements are about your overall experiences with the parents of your students. Please read each item and rate the degree to which you agree or disagree with the statement.,,,,,
+Q18a,"In general, I feel comfortable talking with my students' parents.",Teacher,School Experience,Histogram,Categorical,AGREEMENT_ORDER
+Q18b,"In general, my students' parents feel comfortable talking with me.",Teacher,School Experience,Histogram,Categorical,AGREEMENT_ORDER
+Q18c,"In general, I enjoy talking with my students' parents.",Teacher,School Experience,Histogram,Categorical,AGREEMENT_ORDER
+Q18d,"In general, I have confidence in my students' parents.",Teacher,School Experience,Histogram,Categorical,AGREEMENT_ORDER
+Q18e,"In general, parents think I am doing good things for their children.",Teacher,School Experience,Histogram,Categorical,AGREEMENT_ORDER
+Q19,Please rate your level of agreement with the following statements about your stress at school. I feel stressed for…,,,,,
+Q19a,not having support from the administrators at my school.,Teacher,School Experience,Histogram,Categorical,AGREEMENT_ORDER
+Q19b,not having support from colleagues at my school.,Teacher,School Experience,Histogram,Categorical,AGREEMENT_ORDER
+Q19c,having to manage student behaviors.,Teacher,School Experience,Histogram,Categorical,AGREEMENT_ORDER
+Q19d,having too much teaching work to do.,Teacher,School Experience,Histogram,Categorical,AGREEMENT_ORDER
+Q19e,"not having enough time to complete my teaching work (e.g., preparing, teaching the curricular content).",Teacher,School Experience,Histogram,Categorical,AGREEMENT_ORDER
+Q19f,not being able to meet the diverse learning needs of my students.,Teacher,School Experience,Histogram,Categorical,AGREEMENT_ORDER
+Q19g,not doing a good job with my teaching.,Teacher,School Experience,Histogram,Categorical,AGREEMENT_ORDER
+Q20,Please rate how often you experience the following.,,,,,
+Q20a,I feel emotionally drained from my work.,Teacher,School Experience,Histogram,Categorical,FREQUENCY_ORDER
+Q20b,I feel used up at the end of the workday.,Teacher,School Experience,Histogram,Categorical,FREQUENCY_ORDER
+Q20c,I feel fatigued when I get up in the morning and have to face another day on the job.,Teacher,School Experience,Histogram,Categorical,FREQUENCY_ORDER
+Q20d,Working with people all day is really a strain for me.,Teacher,School Experience,Histogram,Categorical,FREQUENCY_ORDER
+Q20e,I feel burned out from my work.,Teacher,School Experience,Histogram,Categorical,FREQUENCY_ORDER
+Q20f,I feel like I'm at the end of my rope.,Teacher,School Experience,Histogram,Categorical,FREQUENCY_ORDER
+Q21,"Please share any other major changes at this school within the past school year that might have affected student behavior or school climate (e.g., policy changes, large student turnover, etc.).",Teacher,General Feedback,Text box,Open-ended,
+Q22,Please share any other thoughts you have about your school's phone policy.,Teacher,General Feedback,Text box,Open-ended,
+Q23,Is there anything else you want to share with us?,Teacher,General Feedback,Text box,Open-ended,
+Q24,What grade level(s) do you primarily teach?,Teacher,Demographics,Histogram,Categorical,GRADE_ORDER
+Q25,Area(s) taught: (Mark all that apply),Teacher,Demographics,Histogram,Categorical,AREAS_TAUGHT_ORDER
+Q26,At what academic level do you teach the majority of your classes?,Teacher,Demographics,Histogram,Categorical,LEVEL_TAUGHT_ORDER
+Q27,How many total years of experience do you have working in education (any role)?,Teacher,Demographics,Summary statistics,Numerical,
+Q28,What is your gender?,Teacher,Demographics,Histogram,Categorical,GENDER_ORDER
+Q29,With which racial/ethnic groups do you identify? You can select more than one.,Teacher,Demographics,Histogram,Categorical,RACE_ORDER
+RQ1,"Overall, how would you say this new phone policy has changed your school?",Teacher,Recommended,Text box,Open-ended,
+RQ2,Please rate your agreement with the following statements about your students’ behavior or feelings since the _____ [school to add] policy was introduced. “Since the new phone policy that was introduced in _______ [school to add] …,,,,,
+RQ2a,Students seem more focused in class.,Teacher,Recommended,Histogram,Categorical,AGREEMENT_ORDER
+RQ2b,Students seem less distracted,Teacher,Recommended,Histogram,Categorical,AGREEMENT_ORDER
+RQ2c,Students have developed better social skills.,Teacher,Recommended,Histogram,Categorical,AGREEMENT_ORDER
+RQ2d,Students have formed closer bonds with their peers.,Teacher,Recommended,Histogram,Categorical,AGREEMENT_ORDER
+RQ2e,Students are being left out or excluded more.,Teacher,Recommended,Histogram,Categorical,AGREEMENT_ORDER
+RQ2f,Students seem more anxious without their phones.,Teacher,Recommended,Histogram,Categorical,AGREEMENT_ORDER
+RQ2g,Students have talked to more people during lunch or breaks.,Teacher,Recommended,Histogram,Categorical,AGREEMENT_ORDER
+RQ2h,Students seem less pressured to check their phones.,Teacher,Recommended,Histogram,Categorical,AGREEMENT_ORDER
+RQ2i,There have been fewer discipline problems at my school.,Teacher,Recommended,Histogram,Categorical,AGREEMENT_ORDER
+RQ2j,There seems to be less social drama between students.,Teacher,Recommended,Histogram,Categorical,AGREEMENT_ORDER
+RQ2k,Academic outcomes have improved.,Teacher,Recommended,Histogram,Categorical,AGREEMENT_ORDER
+RQ2l,Class disruptions have declined.,Teacher,Recommended,Histogram,Categorical,AGREEMENT_ORDER
+RQ2m,Lack of smartphone access in class has impaired teaching.,Teacher,Recommended,Histogram,Categorical,AGREEMENT_ORDER
+RQ2n,Nothing has really changed for students.,Teacher,Recommended,Histogram,Categorical,AGREEMENT_ORDER
